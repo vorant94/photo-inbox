@@ -63,7 +63,10 @@ class InboxScreen extends StatelessWidget {
           itemBuilder: (_, index) {
             final createdDate = groupKeys[index];
             final items = itemGroups[groupKeys[index]]!;
-            return InboxItemGridWidget(createdDate, items);
+            return InboxItemGridWidget(
+              createdDate: createdDate,
+              items: items,
+            );
           },
         ),
       ),

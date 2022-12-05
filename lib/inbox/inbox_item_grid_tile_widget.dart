@@ -8,8 +8,8 @@ import 'inbox_item_screen.dart';
 class InboxItemGridTileWidget extends StatefulWidget {
   final InboxItem item;
 
-  const InboxItemGridTileWidget(
-    this.item, {
+  const InboxItemGridTileWidget({
+    required this.item,
     Key? key,
   }) : super(key: key);
 

@@ -8,9 +8,9 @@ class InboxItemGridWidget extends StatelessWidget {
   final DateTime createdDate;
   final List<InboxItem> items;
 
-  const InboxItemGridWidget(
-    this.createdDate,
-    this.items, {
+  const InboxItemGridWidget({
+    required this.createdDate,
+    required this.items,
     Key? key,
   }) : super(key: key);
 
@@ -27,7 +27,11 @@ class InboxItemGridWidget extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
-          children: items.map((item) => InboxItemGridTileWidget(item)).toList(),
+          children: items
+              .map((item) => InboxItemGridTileWidget(
+                    item: item,
+                  ))
+              .toList(),
         ),
       ],
     );

@@ -7,10 +7,10 @@ class InboxItem with ChangeNotifier {
   String? _tag;
   bool _isCompleted;
 
-  InboxItem(
-    this.id,
-    this.imageUrl,
-    this.createdDate, {
+  InboxItem({
+    required this.id,
+    required this.imageUrl,
+    required this.createdDate,
     String? tag,
     var isCompleted = false,
   })  : _tag = tag,
