@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'inbox/inbox.dart';
-import 'inbox/inbox_item_screen.dart';
 import 'inbox/inbox_screen.dart';
+import 'inbox/todo_screen.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (_) => Inbox(),
-    child: const MyApp(),
-  ));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +22,7 @@ class MyApp extends StatelessWidget {
       initialRoute: InboxScreen.route,
       routes: {
         InboxScreen.route: (_) => const InboxScreen(),
-        InboxItemScreen.route: (_) => const InboxItemScreen(),
+        TodoScreen.route: (_) => const TodoScreen(),
       },
     );
   }

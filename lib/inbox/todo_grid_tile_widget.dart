@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'inbox.dart';
-import 'inbox_item.dart';
-import 'inbox_item_screen.dart';
+import 'inbox_notifier.dart';
+import 'todo.dart';
+import 'todo_screen.dart';
 
-class InboxItemGridTileWidget extends StatefulWidget {
-  final InboxItem item;
+class TodoGridTileWidget extends ConsumerWidget {
+  final Todo todo;
 
-  const InboxItemGridTileWidget({
-    required this.item,
+  const TodoGridTileWidget({
+    required this.todo,
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<InboxItemGridTileWidget> createState() =>
-      _InboxItemGridTileWidgetState();
-}
-
-class _InboxItemGridTileWidgetState extends State<InboxItemGridTileWidget> {
-  void _toggleCompleted(BuildContext context) {
-    final inbox = Provider.of<Inbox>(context, listen: false);
-    setState(() {
-      inbox.toggleItemCompleted(widget.item.id);
-    });
+  void _toggleCompleted(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final notifier = ref.read(inboxProvider.notifier);
+    notifier.toggleTodoCompleted(todo.id);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(
-          InboxItemScreen.route,
-          arguments: InboxItemDetailsArguments(widget.item.id),
+          TodoScreen.route,
+          arguments: TodoArguments(todo.id),
         );
       },
       child: Stack(
@@ -40,7 +38,7 @@ class _InboxItemGridTileWidgetState extends State<InboxItemGridTileWidget> {
           Container(
             constraints: const BoxConstraints.expand(),
             child: Image.network(
-              widget.item.imageUrl,
+              todo.imageUrl,
               fit: BoxFit.cover,
             ),
           ),
@@ -59,8 +57,8 @@ class _InboxItemGridTileWidgetState extends State<InboxItemGridTileWidget> {
             child: IconButton(
               icon: const Icon(Icons.circle_outlined),
               selectedIcon: const Icon(Icons.check_circle),
-              isSelected: widget.item.isCompleted,
-              onPressed: () => _toggleCompleted(context),
+              isSelected: todo.isCompleted,
+              onPressed: () => _toggleCompleted(context, ref),
               style: IconButton.styleFrom(
                   foregroundColor:
                       Theme.of(context).colorScheme.inversePrimary),

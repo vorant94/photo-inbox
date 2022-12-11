@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'inbox_item.dart';
-import 'inbox_item_grid_tile_widget.dart';
+import 'todo.dart';
+import 'todo_grid_tile_widget.dart';
 
-class InboxItemGridWidget extends StatelessWidget {
+class TodoGridWidget extends StatelessWidget {
   final DateTime createdDate;
-  final List<InboxItem> items;
+  final List<Todo> todos;
 
-  const InboxItemGridWidget({
+  const TodoGridWidget({
     required this.createdDate,
-    required this.items,
+    required this.todos,
     Key? key,
   }) : super(key: key);
 
@@ -27,9 +27,9 @@ class InboxItemGridWidget extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
-          children: items
-              .map((item) => InboxItemGridTileWidget(
-                    item: item,
+          children: todos
+              .map((element) => TodoGridTileWidget(
+                    todo: element,
                   ))
               .toList(),
         ),

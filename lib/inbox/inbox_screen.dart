@@ -1,43 +1,53 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'inbox.dart';
-import 'inbox_item.dart';
-import 'inbox_item_grid_widget.dart';
+import 'inbox_notifier.dart';
+import 'todo.dart';
+import 'todo_grid_widget.dart';
 
-class InboxScreen extends StatelessWidget {
+class InboxScreen extends ConsumerWidget {
   static const route = '/inbox';
 
   const InboxScreen({
     Key? key,
   }) : super(key: key);
 
-  Map<DateTime, List<InboxItem>> _groupItemsByDate(BuildContext context) {
-    final inbox = Provider.of<Inbox>(context, listen: false);
-    final isShowAllMode = inbox.isShowAllMode;
-    final items = inbox.items;
+  Map<DateTime, List<Todo>> _groupItemsByDate(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final state = ref.read(inboxProvider);
+    final isShowAllMode = state.isShowAllMode;
+    final todos = state.todos;
 
-    final filteredItems =
-        isShowAllMode ? items : items.where((item) => !item.isCompleted);
-    return groupBy(filteredItems, (item) => item.createdDate);
+    final filteredTodos =
+        isShowAllMode ? todos : todos.where((element) => !element.isCompleted);
+    return groupBy(filteredTodos, (element) => element.createdDate);
   }
 
-  void _onPopupMenuSelected(BuildContext context, InboxPopupMenuActions value) {
+  void _onPopupMenuSelected(
+    BuildContext context,
+    WidgetRef ref,
+    InboxPopupMenuActions value,
+  ) {
     switch (value) {
       case InboxPopupMenuActions.toggleShowAllMode:
-        final inbox = Provider.of<Inbox>(context, listen: false);
-        inbox.isShowAllMode = !inbox.isShowAllMode;
+        final notifier = ref.read(inboxProvider.notifier);
+        notifier.toggleShowAllMode();
         break;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final inbox = Provider.of<Inbox>(context);
-    final isShowAllMode = inbox.isShowAllMode;
-    final itemGroups = _groupItemsByDate(context);
-    final groupKeys = itemGroups.keys.toList();
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final state = ref.watch(inboxProvider);
+    final isShowAllMode = state.isShowAllMode;
+    final todoGroups = _groupItemsByDate(context, ref);
+    final groupKeys = todoGroups.keys.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +62,7 @@ class InboxScreen extends StatelessWidget {
                     Text(isShowAllMode ? 'Show uncompleted only' : 'Show all'),
               )
             ],
-            onSelected: (value) => _onPopupMenuSelected(context, value),
+            onSelected: (value) => _onPopupMenuSelected(context, ref, value),
           )
         ],
       ),
@@ -62,10 +72,10 @@ class InboxScreen extends StatelessWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 15),
           itemBuilder: (_, index) {
             final createdDate = groupKeys[index];
-            final items = itemGroups[groupKeys[index]]!;
-            return InboxItemGridWidget(
+            final todos = todoGroups[groupKeys[index]]!;
+            return TodoGridWidget(
               createdDate: createdDate,
-              items: items,
+              todos: todos,
             );
           },
         ),
@@ -74,4 +84,6 @@ class InboxScreen extends StatelessWidget {
   }
 }
 
-enum InboxPopupMenuActions { toggleShowAllMode }
+enum InboxPopupMenuActions {
+  toggleShowAllMode,
+}
