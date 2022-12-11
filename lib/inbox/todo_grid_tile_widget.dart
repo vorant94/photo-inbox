@@ -14,17 +14,12 @@ class TodoGridTileWidget extends ConsumerWidget {
     Key? key,
   }) : super(key: key);
 
-  void _toggleCompleted(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  void _toggleCompleted(WidgetRef ref) {
     final notifier = ref.read(inboxProvider.notifier);
     notifier.toggleTodoCompleted(todo.id);
   }
 
-  void _gotoTodo(
-    BuildContext context,
-  ) {
+  void _gotoTodo(BuildContext context) {
     context.pushNamed(TodoScreen.route, params: {'todoId': todo.id});
   }
 
@@ -60,7 +55,7 @@ class TodoGridTileWidget extends ConsumerWidget {
               icon: const Icon(Icons.circle_outlined),
               selectedIcon: const Icon(Icons.check_circle),
               isSelected: todo.isCompleted,
-              onPressed: () => _toggleCompleted(context, ref),
+              onPressed: () => _toggleCompleted(ref),
               style: IconButton.styleFrom(
                   foregroundColor:
                       Theme.of(context).colorScheme.inversePrimary),

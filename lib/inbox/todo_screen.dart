@@ -18,8 +18,7 @@ class TodoScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final state = ref.watch(inboxProvider);
-    final todos = state.todos;
+    final todos = ref.watch(inboxProvider);
     final todo = todos.firstWhere((element) => element.id == todoId);
 
     return Scaffold(
