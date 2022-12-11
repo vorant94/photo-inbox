@@ -7,7 +7,7 @@ import 'todo.dart';
 import 'todo_grid_widget.dart';
 
 class InboxScreen extends ConsumerWidget {
-  static const route = '/inbox';
+  static const route = 'inbox';
 
   const InboxScreen({
     Key? key,

@@ -24,10 +24,11 @@ class Todo {
     bool? isCompleted,
   }) {
     return Todo(
-        id: id ?? this.id,
-        imageUrl: imageUrl ?? this.imageUrl,
-        createdDate: createdDate ?? this.createdDate,
-        tag: tag ?? this.tag,
-        isCompleted: isCompleted ?? this.isCompleted);
+      id: id ?? this.id,
+      imageUrl: imageUrl ?? this.imageUrl,
+      createdDate: createdDate ?? this.createdDate,
+      tag: tag ?? this.tag,
+      isCompleted: isCompleted ?? this.isCompleted,
+    );
   }
 }

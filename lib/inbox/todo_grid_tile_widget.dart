@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'inbox_notifier.dart';
 import 'todo.dart';
@@ -21,18 +22,19 @@ class TodoGridTileWidget extends ConsumerWidget {
     notifier.toggleTodoCompleted(todo.id);
   }
 
+  void _gotoTodo(
+    BuildContext context,
+  ) {
+    context.pushNamed(TodoScreen.route, params: {'todoId': todo.id});
+  }
+
   @override
   Widget build(
     BuildContext context,
     WidgetRef ref,
   ) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed(
-          TodoScreen.route,
-          arguments: TodoArguments(todo.id),
-        );
-      },
+      onTap: () => _gotoTodo(context),
       child: Stack(
         children: [
           Container(

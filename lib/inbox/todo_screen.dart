@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'inbox_notifier.dart';
 
 class TodoScreen extends ConsumerWidget {
-  static const route = '/todo';
+  static const route = 'todo';
+
+  final String todoId;
 
   const TodoScreen({
+    required this.todoId,
     Key? key,
   }) : super(key: key);
 
@@ -15,11 +18,9 @@ class TodoScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final args = ModalRoute.of(context)!.settings.arguments as TodoArguments;
-    final todo = ref
-        .watch(inboxProvider)
-        .todos
-        .firstWhere((item) => item.id == args.todoId);
+    final state = ref.watch(inboxProvider);
+    final todos = state.todos;
+    final todo = todos.firstWhere((element) => element.id == todoId);
 
     return Scaffold(
       body: Image.network(
@@ -30,10 +31,4 @@ class TodoScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-class TodoArguments {
-  final String todoId;
-
-  TodoArguments(this.todoId);
 }

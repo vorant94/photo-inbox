@@ -28,9 +28,7 @@ class TodoGridWidget extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           children: todos
-              .map((element) => TodoGridTileWidget(
-                    todo: element,
-                  ))
+              .map((element) => TodoGridTileWidget(todo: element))
               .toList(),
         ),
       ],
