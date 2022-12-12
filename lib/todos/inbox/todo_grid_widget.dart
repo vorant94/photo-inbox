@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'todo.dart';
+import '../models/todo.dart';
 import 'todo_grid_tile_widget.dart';
 
+@immutable
 class TodoGridWidget extends StatelessWidget {
   final DateTime createdDate;
-  final List<Todo> todos;
+  final TodoList todos;
 
   const TodoGridWidget({
     required this.createdDate,
