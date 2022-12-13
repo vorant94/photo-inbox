@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-import '../models/create_todo.dart';
 import '../todos_notifier.dart';
+import '../todos_table.dart';
 
 @immutable
 class PreviewScreen extends ConsumerStatefulWidget {
@@ -16,18 +16,19 @@ class PreviewScreen extends ConsumerStatefulWidget {
     name: PreviewScreen.routeName,
     path: '/${PreviewScreen.routeName}',
     builder: (context, state) {
-      if (state.extra is! File) {
+      final tempFile = state.extra;
+      if (tempFile is! File) {
         throw Exception('extra of type File must be set');
       }
 
-      return PreviewScreen(file: state.extra as File);
+      return PreviewScreen(tempFile: tempFile);
     },
   );
 
-  final File file;
+  final File tempFile;
 
   const PreviewScreen({
-    required this.file,
+    required this.tempFile,
     Key? key,
   }) : super(key: key);
 
@@ -46,7 +47,7 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
           children: [
             Expanded(
               child: Image.file(
-                widget.file,
+                widget.tempFile,
                 height: double.infinity,
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -66,15 +67,24 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
   }
 
   Future<void> _createTodo() async {
-    final fileDir = (await getApplicationDocumentsDirectory()).path;
-    final filename = path.basename(widget.file.path);
-    final filePath = path.join(fileDir, filename);
-    await widget.file.copy(filePath);
-
-    final createTodo = CreateTodo(imagePath: filePath);
+    final tempFile = widget.tempFile;
     final notifier = ref.read(inboxProvider.notifier);
-    await notifier.createTodo(createTodo);
 
-    if (mounted) context.pop();
+    final fileDir = (await getApplicationDocumentsDirectory()).path;
+    final filename = path.basename(tempFile.path);
+    final filePath = path.join(fileDir, filename);
+
+    try {
+      final copy = await tempFile.copy(filePath);
+
+      await notifier.createTodo(CreateTodo(imagePath: copy.path));
+
+      await tempFile.delete();
+      if (mounted) context.pop();
+    } catch (e) {
+      final copy = File(filePath);
+      await copy.delete();
+      rethrow;
+    }
   }
 }

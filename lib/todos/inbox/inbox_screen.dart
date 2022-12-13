@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../camera/camera_screen.dart';
-import '../models/todo.dart';
 import '../todos_notifier.dart';
+import '../todos_table.dart';
 import 'todo_grid_widget.dart';
 
 @immutable
@@ -80,7 +80,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     );
   }
 
-  Map<DateTime, TodoList> _groupItemsByDate(TodoList todos) {
+  Map<DateTime, List<Todo>> _groupItemsByDate(List<Todo> todos) {
     final filteredTodos =
         _isShowAllMode ? todos : todos.where((element) => !element.isCompleted);
     return groupBy(filteredTodos, (element) {

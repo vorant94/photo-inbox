@@ -13,13 +13,12 @@ class DetailsScreen extends ConsumerWidget {
     name: DetailsScreen.routeName,
     path: '/${DetailsScreen.routeName}/:todoId',
     builder: (context, state) {
-      if (state.params['todoId'] is! String) {
+      final todoId = state.params['todoId'];
+      if (todoId is! String) {
         throw Exception('params[\'todoId\'] of type String must be set');
       }
 
-      return DetailsScreen(
-        todoId: int.parse(state.params['todoId'] as String),
-      );
+      return DetailsScreen(todoId: int.parse(todoId));
     },
   );
 

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../models/todo.dart';
 import '../todos_notifier.dart';
+import '../todos_table.dart';
 import 'details_screen.dart';
 
 @immutable
