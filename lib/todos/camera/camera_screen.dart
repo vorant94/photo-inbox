@@ -10,6 +10,11 @@ import 'preview_screen.dart';
 
 @immutable
 class CameraScreen extends StatefulWidget {
+  const CameraScreen({super.key});
+
+  @override
+  State<CameraScreen> createState() => _CameraScreenState();
+
   static const routeName = 'camera';
   static final route = GoRoute(
     name: CameraScreen.routeName,
@@ -17,19 +22,15 @@ class CameraScreen extends StatefulWidget {
     builder: (context, state) => const CameraScreen(),
   );
   static late final List<CameraDescription> cameras;
-
-  const CameraScreen({super.key});
-
-  @override
-  State<CameraScreen> createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> {
   final _controller = CameraController(
-    CameraScreen.cameras[0],
-    ResolutionPreset.max,
+    CameraScreen.cameras.first,
+    ResolutionPreset.high,
     enableAudio: false,
   );
+  late Future<void> _initializeControllerFuture;
 
   @override
   void initState() {
@@ -38,9 +39,7 @@ class _CameraScreenState extends State<CameraScreen> {
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
     );
-    _controller.initialize().then((value) {
-      if (mounted) setState(() {});
-    });
+    _initializeControllerFuture = _controller.initialize();
   }
 
   @override
@@ -55,34 +54,40 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: _controller.value.isInitialized
-            ? Column(
-                children: [
-                  CameraPreview(_controller),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        onPressed: _goToInbox,
-                        child: const Text('Inbox'),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.camera_alt),
-                        onPressed: _takePicture,
-                        style: IconButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
+        child: FutureBuilder(
+          // TODO why _controller.initialize() can't be used here right away?
+          //  (it fails upon second camera opening or even crashes)
+          future: _initializeControllerFuture,
+          builder: (context, snapshot) =>
+              snapshot.connectionState == ConnectionState.done
+                  ? Column(
+                      children: [
+                        CameraPreview(_controller),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                              onPressed: _goToInbox,
+                              child: const Text('Inbox'),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.camera_alt),
+                              onPressed: _takePicture,
+                              style: IconButton.styleFrom(
+                                backgroundColor: primaryColor,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                      ],
+                    )
+                  : const Center(child: CircularProgressIndicator()),
+        ),
       ),
     );
   }

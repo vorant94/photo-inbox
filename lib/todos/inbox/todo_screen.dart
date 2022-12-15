@@ -7,30 +7,17 @@ import 'package:go_router/go_router.dart';
 import '../todos_notifier.dart';
 
 @immutable
-class DetailsScreen extends ConsumerWidget {
-  static const routeName = 'details';
-  static final route = GoRoute(
-    name: DetailsScreen.routeName,
-    path: '/${DetailsScreen.routeName}/:todoId',
-    builder: (context, state) {
-      final todoId = state.params['todoId']!;
-
-      return DetailsScreen(todoId: int.parse(todoId));
-    },
-  );
-
-  final int todoId;
-
-  const DetailsScreen({
+class TodoScreen extends ConsumerWidget {
+  const TodoScreen({
     required this.todoId,
     super.key,
   });
 
+  final int todoId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(TodosNotifier.provider);
-
-    final todo = todos.firstWhere((todo) => todo.id == todoId);
+    final todo = ref.watch(todoProvider(todoId));
 
     return Scaffold(
       body: Image.file(
@@ -41,4 +28,15 @@ class DetailsScreen extends ConsumerWidget {
       ),
     );
   }
+
+  static const routeName = 'doto';
+  static final route = GoRoute(
+    name: TodoScreen.routeName,
+    path: '/${TodoScreen.routeName}/:todoId',
+    builder: (context, state) {
+      final todoId = state.params['todoId']!;
+
+      return TodoScreen(todoId: int.parse(todoId));
+    },
+  );
 }

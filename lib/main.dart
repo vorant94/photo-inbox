@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import 'todos/camera/camera_screen.dart';
 import 'todos/camera/preview_screen.dart';
-import 'todos/inbox/details_screen.dart';
 import 'todos/inbox/inbox_screen.dart';
+import 'todos/inbox/todo_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +42,7 @@ final _routerConfig = GoRouter(
       redirect: (context, state) => state.namedLocation(InboxScreen.routeName),
     ),
     InboxScreen.route,
-    DetailsScreen.route,
+    TodoScreen.route,
     CameraScreen.route,
     PreviewScreen.route,
   ],

@@ -35,6 +35,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
         name,
         where: where.isEmpty ? null : where,
         whereArgs: whereArgs.isEmpty ? null : whereArgs,
+        orderBy: '${TodoFields.createdDate} DESC',
       );
 
       return maps.map((map) => Todo.fromJson(map)).toList();

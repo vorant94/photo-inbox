@@ -1,5 +1,6 @@
-import 'package:mobile/shared/db/tables/todos_table.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../tables/todos_table.dart';
 
 Future<void> onCreate(Database db, int version) async {
   final batch = db.batch();

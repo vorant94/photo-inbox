@@ -1,46 +1,44 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../shared/db/tables/todos_table.dart';
 import '../camera/camera_screen.dart';
+import '../show_all_mode_notifier.dart';
 import '../todos_notifier.dart';
-import 'todo_grid_widget.dart';
+import 'todos_by_day_widget.dart';
+import 'todos_by_tag_widget.dart';
 
 @immutable
 class InboxScreen extends ConsumerStatefulWidget {
+  const InboxScreen({super.key});
+
+  @override
+  ConsumerState<InboxScreen> createState() => _InboxScreenState();
+
   static const routeName = 'inbox';
   static final route = GoRoute(
     name: InboxScreen.routeName,
     path: '/${InboxScreen.routeName}',
     builder: (context, state) => const InboxScreen(),
   );
-
-  const InboxScreen({super.key});
-
-  @override
-  ConsumerState<InboxScreen> createState() => _InboxScreenState();
 }
 
 class _InboxScreenState extends ConsumerState<InboxScreen> {
-  var _isShowAllMode = true;
+  var _currentTabIndex = 0;
+  final _tabs = const [TodosByDayWidget(), TodosByTagWidget()];
 
   @override
   void initState() {
     super.initState();
 
-    final notifier = ref.read(TodosNotifier.provider.notifier);
+    final notifier = ref.read(todosNotifier);
 
     notifier.fetchTodos();
   }
 
   @override
   Widget build(BuildContext context) {
-    final todos = ref.watch(TodosNotifier.provider);
-
-    final todoGroups = _groupItemsByDate(todos);
-    final groupKeys = todoGroups.keys.toList();
+    final showAllMode = ref.watch(showAllModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,8 +49,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: _PopupMenuActions.toggleShowAllMode,
-                child:
-                    Text(_isShowAllMode ? 'Show uncompleted only' : 'Show all'),
+                child: Text(showAllMode ? 'Show uncompleted only' : 'Show all'),
               )
             ],
             onSelected: _onPopupMenuSelected,
@@ -64,43 +61,40 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
-        child: ListView.separated(
-          itemCount: groupKeys.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 15),
-          itemBuilder: (context, index) {
-            final createdDate = groupKeys[index];
-            final todos = todoGroups[groupKeys[index]]!;
-            return TodoGridWidget(
-              createdDate: createdDate,
-              todos: todos,
-            );
-          },
-        ),
+        child: _tabs[_currentTabIndex],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentTabIndex,
+        onTap: _changeCurrentTabIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inbox),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.discount),
+            label: 'Tags',
+          ),
+        ],
       ),
     );
-  }
-
-  Map<DateTime, List<Todo>> _groupItemsByDate(List<Todo> todos) {
-    final filteredTodos =
-        _isShowAllMode ? todos : todos.where((element) => !element.isCompleted);
-    return groupBy(filteredTodos, (element) {
-      final createdDate = element.createdDate;
-      final startOfCreatedDateDay =
-          DateTime(createdDate.year, createdDate.month, createdDate.day);
-      return startOfCreatedDateDay;
-    });
   }
 
   void _onPopupMenuSelected(_PopupMenuActions value) {
     switch (value) {
       case _PopupMenuActions.toggleShowAllMode:
-        setState(() => _isShowAllMode = !_isShowAllMode);
+        final notifier = ref.read(showAllModeNotifier);
+        notifier.toggleShowAllMode();
         break;
     }
   }
 
   void _goToCamera() {
     context.goNamed(CameraScreen.routeName);
+  }
+
+  void _changeCurrentTabIndex(int value) {
+    setState(() => _currentTabIndex = value);
   }
 }
 

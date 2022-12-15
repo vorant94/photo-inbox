@@ -8,6 +8,16 @@ import '../todos_notifier.dart';
 
 @immutable
 class PreviewScreen extends ConsumerStatefulWidget {
+  const PreviewScreen({
+    required this.cacheImage,
+    super.key,
+  });
+
+  final File cacheImage;
+
+  @override
+  ConsumerState<PreviewScreen> createState() => _PreviewScreenState();
+
   static const routeName = 'preview';
   static final route = GoRoute(
     name: PreviewScreen.routeName,
@@ -21,21 +31,13 @@ class PreviewScreen extends ConsumerStatefulWidget {
       return PreviewScreen(cacheImage: cacheImage);
     },
   );
-
-  final File cacheImage;
-
-  const PreviewScreen({
-    required this.cacheImage,
-    super.key,
-  });
-
-  @override
-  ConsumerState<PreviewScreen> createState() => _PreviewScreenState();
 }
 
 class _PreviewScreenState extends ConsumerState<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -54,7 +56,7 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
               onPressed: _createTodo,
               icon: const Icon(Icons.save),
               style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: primaryColor,
               ),
             ),
           ],
@@ -65,7 +67,7 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
 
   Future<void> _createTodo() async {
     final cacheImage = widget.cacheImage;
-    final notifier = ref.read(TodosNotifier.provider.notifier);
+    final notifier = ref.read(todosNotifier);
 
     await notifier.createTodo(cacheImage: cacheImage);
     await cacheImage.delete();

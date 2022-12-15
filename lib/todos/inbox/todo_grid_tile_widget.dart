@@ -6,19 +6,21 @@ import 'package:go_router/go_router.dart';
 
 import '../../shared/db/tables/todos_table.dart';
 import '../todos_notifier.dart';
-import 'details_screen.dart';
+import 'todo_screen.dart';
 
 @immutable
 class TodoGridTileWidget extends ConsumerWidget {
-  final Todo todo;
-
   const TodoGridTileWidget({
     required this.todo,
     super.key,
   });
 
+  final Todo todo;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final inversePrimary = Theme.of(context).colorScheme.inversePrimary;
+
     return GestureDetector(
       onTap: () => _gotoDetails(context),
       child: Stack(
@@ -48,8 +50,8 @@ class TodoGridTileWidget extends ConsumerWidget {
               isSelected: todo.isCompleted,
               onPressed: () => _toggleCompleted(ref),
               style: IconButton.styleFrom(
-                  foregroundColor:
-                      Theme.of(context).colorScheme.inversePrimary),
+                foregroundColor: inversePrimary,
+              ),
             ),
           ),
         ],
@@ -58,14 +60,14 @@ class TodoGridTileWidget extends ConsumerWidget {
   }
 
   void _toggleCompleted(WidgetRef ref) {
-    final notifier = ref.read(TodosNotifier.provider.notifier);
+    final notifier = ref.read(todosNotifier);
 
     notifier.toggleTodoCompleted(todo.id);
   }
 
   void _gotoDetails(BuildContext context) {
     context.pushNamed(
-      DetailsScreen.routeName,
+      TodoScreen.routeName,
       params: {'todoId': todo.id.toString()},
     );
   }
