@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../db.dart';
+import '../with_tnx.dart';
 import 'entities_table.dart';
 
 @immutable
@@ -22,7 +22,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
     List<int>? ids,
     Transaction? tnx,
   }) async {
-    return await Db.withTnx((tnx) async {
+    return await withTnx((tnx) async {
       String where = '';
       List<Object?> whereArgs = [];
 
@@ -43,7 +43,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
 
   @override
   Future<Todo> getOne(int id, {Transaction? tnx}) async {
-    return await Db.withTnx((tnx) async {
+    return await withTnx((tnx) async {
       final todos = await getMany(ids: [id], tnx: tnx);
 
       if (todos.isEmpty) throw Exception('Not found');
@@ -53,7 +53,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
 
   @override
   Future<Todo> create(CreateTodo createTodo, {Transaction? tnx}) async {
-    return await Db.withTnx((tnx) async {
+    return await withTnx((tnx) async {
       final id = await tnx.insert(
         name,
         createTodo.toJson(),
@@ -64,7 +64,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
 
   @override
   Future<Todo> update(UpdateTodo todo, {Transaction? tnx}) async {
-    return await Db.withTnx((tnx) async {
+    return await withTnx((tnx) async {
       final count = await tnx.update(
         name,
         todo.toJson(),
