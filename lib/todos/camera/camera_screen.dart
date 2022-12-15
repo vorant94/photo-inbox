@@ -16,8 +16,9 @@ class CameraScreen extends StatefulWidget {
     path: '/${CameraScreen.routeName}',
     builder: (context, state) => const CameraScreen(),
   );
+  static late final List<CameraDescription> cameras;
 
-  const CameraScreen({Key? key}) : super(key: key);
+  const CameraScreen({super.key});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -25,7 +26,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   final _controller = CameraController(
-    cameras[0],
+    CameraScreen.cameras[0],
     ResolutionPreset.max,
     enableAudio: false,
   );
@@ -88,7 +89,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _takePicture() async {
     if (_controller.value.isTakingPicture) return;
+
     final file = File((await _controller.takePicture()).path);
+
     if (mounted) context.pushNamed(PreviewScreen.routeName, extra: file);
   }
 
@@ -96,5 +99,3 @@ class _CameraScreenState extends State<CameraScreen> {
     context.goNamed(InboxScreen.routeName);
   }
 }
-
-late List<CameraDescription> cameras;

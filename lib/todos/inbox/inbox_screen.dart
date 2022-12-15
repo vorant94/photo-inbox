@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/db/tables/todos_table.dart';
 import '../camera/camera_screen.dart';
 import '../todos_notifier.dart';
-import '../todos_table.dart';
 import 'todo_grid_widget.dart';
 
 @immutable
@@ -17,9 +17,7 @@ class InboxScreen extends ConsumerStatefulWidget {
     builder: (context, state) => const InboxScreen(),
   );
 
-  const InboxScreen({
-    Key? key,
-  }) : super(key: key);
+  const InboxScreen({super.key});
 
   @override
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
@@ -32,13 +30,15 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   void initState() {
     super.initState();
 
-    final notifier = ref.read(inboxProvider.notifier);
+    final notifier = ref.read(TodosNotifier.provider.notifier);
+
     notifier.fetchTodos();
   }
 
   @override
   Widget build(BuildContext context) {
-    final todos = ref.watch(inboxProvider);
+    final todos = ref.watch(TodosNotifier.provider);
+
     final todoGroups = _groupItemsByDate(todos);
     final groupKeys = todoGroups.keys.toList();
 
@@ -50,7 +50,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
               PopupMenuItem(
-                value: _InboxPopupMenuActions.toggleShowAllMode,
+                value: _PopupMenuActions.toggleShowAllMode,
                 child:
                     Text(_isShowAllMode ? 'Show uncompleted only' : 'Show all'),
               )
@@ -91,12 +91,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     });
   }
 
-  void _onPopupMenuSelected(_InboxPopupMenuActions value) {
+  void _onPopupMenuSelected(_PopupMenuActions value) {
     switch (value) {
-      case _InboxPopupMenuActions.toggleShowAllMode:
-        setState(() {
-          _isShowAllMode = !_isShowAllMode;
-        });
+      case _PopupMenuActions.toggleShowAllMode:
+        setState(() => _isShowAllMode = !_isShowAllMode);
         break;
     }
   }
@@ -106,6 +104,6 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   }
 }
 
-enum _InboxPopupMenuActions {
+enum _PopupMenuActions {
   toggleShowAllMode,
 }

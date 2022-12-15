@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../todos_table.dart';
+import '../../shared/db/tables/todos_table.dart';
 import 'todo_grid_tile_widget.dart';
 
 @immutable
@@ -12,8 +12,8 @@ class TodoGridWidget extends StatelessWidget {
   const TodoGridWidget({
     required this.createdDate,
     required this.todos,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,8 @@ class TodoGridWidget extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
-          children: todos
-              .map((element) => TodoGridTileWidget(todo: element))
-              .toList(),
+          children:
+              todos.map((todo) => TodoGridTileWidget(todo: todo)).toList(),
         ),
       ],
     );

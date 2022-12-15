@@ -10,7 +10,7 @@ import 'todos/inbox/inbox_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  CameraScreen.cameras = await availableCameras();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -39,7 +39,7 @@ final _routerConfig = GoRouter(
       // the goal is to use here namedLocation, but
       // using context.namedLocation ends up in error for some reason
       // (it seems there is no GoRouter yet at this moment in the context)
-      redirect: (context, state) => state.namedLocation(CameraScreen.routeName),
+      redirect: (context, state) => state.namedLocation(InboxScreen.routeName),
     ),
     InboxScreen.route,
     DetailsScreen.route,

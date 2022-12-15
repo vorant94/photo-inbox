@@ -26,16 +26,14 @@ class DetailsScreen extends ConsumerWidget {
 
   const DetailsScreen({
     required this.todoId,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final todos = ref.watch(inboxProvider);
-    final todo = todos.firstWhere((element) => element.id == todoId);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final todos = ref.watch(TodosNotifier.provider);
+
+    final todo = todos.firstWhere((todo) => todo.id == todoId);
 
     return Scaffold(
       body: Image.file(

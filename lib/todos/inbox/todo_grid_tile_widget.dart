@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/db/tables/todos_table.dart';
 import '../todos_notifier.dart';
-import '../todos_table.dart';
 import 'details_screen.dart';
 
 @immutable
@@ -14,14 +14,11 @@ class TodoGridTileWidget extends ConsumerWidget {
 
   const TodoGridTileWidget({
     required this.todo,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () => _gotoDetails(context),
       child: Stack(
@@ -61,12 +58,15 @@ class TodoGridTileWidget extends ConsumerWidget {
   }
 
   void _toggleCompleted(WidgetRef ref) {
-    final notifier = ref.read(inboxProvider.notifier);
+    final notifier = ref.read(TodosNotifier.provider.notifier);
+
     notifier.toggleTodoCompleted(todo.id);
   }
 
   void _gotoDetails(BuildContext context) {
-    context.pushNamed(DetailsScreen.routeName,
-        params: {'todoId': todo.id.toString()});
+    context.pushNamed(
+      DetailsScreen.routeName,
+      params: {'todoId': todo.id.toString()},
+    );
   }
 }

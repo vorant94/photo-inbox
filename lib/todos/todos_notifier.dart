@@ -1,38 +1,61 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'todos_table.dart';
+import '../shared/db/tables/todos_table.dart';
+import '../shared/io/directory.dart';
 
 class TodosNotifier extends StateNotifier<List<Todo>> {
-  final table = TodoTable();
+  static final provider = StateNotifierProvider<TodosNotifier, List<Todo>>(
+      (ref) => TodosNotifier());
 
-  TodosNotifier() : super([]);
+  static const imagesDir = 'todo-images';
+
+  static final _instance = TodosNotifier._();
+
+  final table = TodosTable();
+
+  factory TodosNotifier() {
+    return _instance;
+  }
+
+  TodosNotifier._() : super([]);
 
   Future<void> toggleTodoCompleted(int todoId) async {
-    final todo = state.firstWhere((element) => element.id == todoId);
-    final update = todo.copyWith({'isCompleted': !todo.isCompleted}).toUpdate();
+    final prev = state.firstWhere((todo) => todo.id == todoId);
+    final update =
+        prev.copyWith({TodoFields.isCompleted: !prev.isCompleted}).toUpdate();
     final curr = await table.update(update);
 
-    state =
-        state.map((element) => element.id == todoId ? curr : element).toList();
+    state = state.map((todo) => todo.id == todoId ? curr : todo).toList();
   }
 
   Future<void> fetchTodos() async {
-    state = await table.getAll();
+    state = await table.getMany();
   }
 
-  Future<void> createTodo(CreateTodo createTodo) async {
+  Future<void> createTodo({
+    required File cacheImage,
+    String? tag,
+  }) async {
+    final docDirPath = (await getApplicationDocumentsDirectory()).path;
+    final imagesDirPath = join(docDirPath, TodosNotifier.imagesDir);
+    await Directory(imagesDirPath).ensure();
+
+    final cacheImageName = basename(cacheImage.path);
+    final imagePath = join(imagesDirPath, cacheImageName);
+    final image = await cacheImage.copy(imagePath);
+
     try {
-      final todo = await table.insert(createTodo);
-      state = [...state, todo];
+      final create = CreateTodo(imagePath: image.path, tag: tag);
+      final todo = await table.create(create);
+
+      state = state..add(todo);
     } catch (e) {
-      await File(createTodo.imagePath).delete();
+      await image.delete();
       rethrow;
     }
   }
 }
-
-final inboxProvider = StateNotifierProvider<TodosNotifier, List<Todo>>((ref) {
-  return TodosNotifier();
-});
