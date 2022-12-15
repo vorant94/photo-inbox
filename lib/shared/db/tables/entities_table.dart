@@ -16,13 +16,13 @@ abstract class EntitiesTable<E extends Entity, CE extends CreateEntity,
 
   const EntitiesTable._();
 
-  Future<List<Entity>> getMany([Transaction? tnx]);
+  Future<List<Entity>> getMany({Transaction? tnx});
 
-  Future<Entity> getOne(int id, [Transaction? tnx]);
+  Future<Entity> getOne(int id, {Transaction? tnx});
 
-  Future<Entity> create(CE create, [Transaction? tnx]);
+  Future<Entity> create(CE create, {Transaction? tnx});
 
-  Future<Entity> update(UE update, [Transaction? tnx]);
+  Future<Entity> update(UE update, {Transaction? tnx});
 }
 
 @immutable

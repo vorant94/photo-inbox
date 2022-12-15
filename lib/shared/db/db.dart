@@ -15,7 +15,7 @@ class Db {
   Db._();
 
   static Future<T> withTnx<T>(WithTnxFn fn, [Transaction? tnx]) async {
-    if (tnx is Transaction) return await fn(tnx);
+    if (tnx != null) return await fn(tnx);
 
     return withDb((db) async => await db.transaction(fn));
   }

@@ -18,42 +18,52 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
   const TodosTable._();
 
   @override
-  Future<List<Todo>> getMany([Transaction? tnx]) async {
+  Future<List<Todo>> getMany({
+    List<int>? ids,
+    Transaction? tnx,
+  }) async {
     return await Db.withTnx((tnx) async {
-      final maps = await tnx.query(name);
+      String where = '';
+      List<Object?> whereArgs = [];
+
+      if (ids != null) {
+        where += '${TodoFields.id} IN(?)';
+        whereArgs.add(ids.join(', '));
+      }
+
+      final maps = await tnx.query(
+        name,
+        where: where.isEmpty ? null : where,
+        whereArgs: whereArgs.isEmpty ? null : whereArgs,
+      );
 
       return maps.map((map) => Todo.fromJson(map)).toList();
     }, tnx);
   }
 
-  // TODO refactor using Table.getMany
   @override
-  Future<Todo> getOne(int id, [Transaction? tnx]) async {
+  Future<Todo> getOne(int id, {Transaction? tnx}) async {
     return await Db.withTnx((tnx) async {
-      final maps = await tnx.query(
-        name,
-        where: '${TodoFields.id} = ?',
-        whereArgs: [id],
-      );
+      final todos = await getMany(ids: [id], tnx: tnx);
 
-      if (maps.isEmpty) throw Exception('Not found');
-      return Todo.fromJson(maps.first);
+      if (todos.isEmpty) throw Exception('Not found');
+      return todos.first;
     }, tnx);
   }
 
   @override
-  Future<Todo> create(CreateTodo createTodo, [Transaction? tnx]) async {
+  Future<Todo> create(CreateTodo createTodo, {Transaction? tnx}) async {
     return await Db.withTnx((tnx) async {
       final id = await tnx.insert(
         name,
         createTodo.toJson(),
       );
-      return getOne(id, tnx);
+      return getOne(id, tnx: tnx);
     }, tnx);
   }
 
   @override
-  Future<Todo> update(UpdateTodo todo, [Transaction? tnx]) async {
+  Future<Todo> update(UpdateTodo todo, {Transaction? tnx}) async {
     return await Db.withTnx((tnx) async {
       final count = await tnx.update(
         name,
@@ -64,7 +74,7 @@ class TodosTable implements EntitiesTable<Todo, CreateTodo, UpdateTodo> {
 
       if (count != 1) throw Exception('Not found');
 
-      return getOne(todo.id, tnx);
+      return getOne(todo.id, tnx: tnx);
     }, tnx);
   }
 }
