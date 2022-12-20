@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../camera/camera_screen.dart';
-import '../show_all_mode_notifier.dart';
-import '../todos_notifier.dart';
+import '../shared/show_all_mode_notifier.dart';
+import '../shared/todos_notifier.dart';
 import 'todos_by_day_widget.dart';
 import 'todos_by_tag_widget.dart';
 
@@ -15,12 +14,7 @@ class InboxScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
 
-  static const routeName = 'inbox';
-  static final route = GoRoute(
-    name: InboxScreen.routeName,
-    path: '/${InboxScreen.routeName}',
-    builder: (context, state) => const InboxScreen(),
-  );
+  static const routeName = '/inbox';
 }
 
 class _InboxScreenState extends ConsumerState<InboxScreen> {
@@ -90,7 +84,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   }
 
   void _goToCamera() {
-    context.goNamed(CameraScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(CameraScreen.routeName);
   }
 
   void _changeCurrentTabIndex(int value) {

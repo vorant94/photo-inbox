@@ -1,6 +1,9 @@
+import 'package:mobile/shared/db/tags/tags_table.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../tables/todos_table.dart';
+import '../tags/tag_fields.dart';
+import '../todos/todo_fields.dart';
+import '../todos/todos_table.dart';
 
 Future<void> onCreate(Database db, int version) async {
   final batch = db.batch();
@@ -16,16 +19,28 @@ typedef _CreateDbFn = void Function(Batch batch);
 
 const List<_CreateDbFn> _createDbFnList = [
   _createTodos,
+  _createTags,
 ];
 
 void _createTodos(Batch batch) {
-  final table = TodosTable();
+  batch.execute('''
+    CREATE TABLE ${TodosTable.name} (
+      ${TodoFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+      ${TodoFields.createdDate} TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      ${TodoFields.imagePath} TEXT NOT NULL,
+      ${TodoFields.tagId} INTEGER,
+      ${TodoFields.isCompleted} BOOLEAN DEFAULT 0 NOT NULL CHECK (${TodoFields.isCompleted} IN (0, 1)),
+      FOREIGN KEY (${TodoFields.tagId}) REFERENCES ${TagsTable.name} (${TagFields.id})
+    );
+  ''');
+}
 
-  batch.execute('''CREATE TABLE ${table.name} (
-    ${TodoFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-    ${TodoFields.imagePath} TEXT NOT NULL,
-    ${TodoFields.createdDate} TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    ${TodoFields.tag} TEXT,
-    ${TodoFields.isCompleted} BOOLEAN DEFAULT 0 NOT NULL CHECK (${TodoFields.isCompleted} IN (0, 1))
-  )''');
+void _createTags(Batch batch) {
+  batch.execute('''
+    CREATE TABLE ${TagsTable.name} (
+      ${TagFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+      ${TagFields.createdDate} TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      ${TagFields.name} TEXT NOT NULL
+    );
+  ''');
 }

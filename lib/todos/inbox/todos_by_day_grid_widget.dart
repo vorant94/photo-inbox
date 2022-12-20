@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../shared/db/tables/todos_table.dart';
+import '../../shared/shared.dart';
 import 'todo_grid_tile_widget.dart';
 
 @immutable

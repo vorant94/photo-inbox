@@ -25,4 +25,4 @@ Future<T> withDb<T>(WithDbFn fn) async {
 }
 
 const _filename = 'photo-inbox.db';
-const _version = 1;
+const _version = 2;

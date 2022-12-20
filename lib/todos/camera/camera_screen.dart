@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 
 import '../inbox/inbox_screen.dart';
 import 'preview_screen.dart';
@@ -15,22 +14,13 @@ class CameraScreen extends StatefulWidget {
   @override
   State<CameraScreen> createState() => _CameraScreenState();
 
-  static const routeName = 'camera';
-  static final route = GoRoute(
-    name: CameraScreen.routeName,
-    path: '/${CameraScreen.routeName}',
-    builder: (context, state) => const CameraScreen(),
-  );
+  static const routeName = '/camera';
   static late final List<CameraDescription> cameras;
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  final _controller = CameraController(
-    CameraScreen.cameras.first,
-    ResolutionPreset.high,
-    enableAudio: false,
-  );
-  late Future<void> _initializeControllerFuture;
+  late final CameraController _controller;
+  late final Future<void> _initializeControllerFuture;
 
   @override
   void initState() {
@@ -38,6 +28,11 @@ class _CameraScreenState extends State<CameraScreen> {
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
+    );
+    _controller = CameraController(
+      CameraScreen.cameras.first,
+      ResolutionPreset.high,
+      enableAudio: false,
     );
     _initializeControllerFuture = _controller.initialize();
   }
@@ -93,14 +88,20 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _takePicture() async {
-    if (_controller.value.isTakingPicture) return;
+    await _initializeControllerFuture;
 
-    final file = File((await _controller.takePicture()).path);
+    final xfile = await _controller.takePicture();
+    final file = File(xfile.path);
 
-    if (mounted) context.pushNamed(PreviewScreen.routeName, extra: file);
+    if (mounted) {
+      Navigator.of(context).pushNamed(
+        PreviewScreen.routeName,
+        arguments: PreviewScreenArguments(cacheImage: file),
+      );
+    }
   }
 
   void _goToInbox() {
-    context.goNamed(InboxScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(InboxScreen.routeName);
   }
 }

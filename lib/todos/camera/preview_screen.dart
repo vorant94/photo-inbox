@@ -2,40 +2,28 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../todos_notifier.dart';
+import '../shared/todos_notifier.dart';
 
+// stateful widget oly for reasons of async usage of context in _createTodo
+// (since there is non context.mounted as of now for stateless widgets)
 @immutable
 class PreviewScreen extends ConsumerStatefulWidget {
-  const PreviewScreen({
-    required this.cacheImage,
-    super.key,
-  });
-
-  final File cacheImage;
+  const PreviewScreen({super.key});
 
   @override
   ConsumerState<PreviewScreen> createState() => _PreviewScreenState();
 
-  static const routeName = 'preview';
-  static final route = GoRoute(
-    name: PreviewScreen.routeName,
-    path: '/${PreviewScreen.routeName}',
-    builder: (context, state) {
-      final cacheImage = state.extra;
-      if (cacheImage is! File) {
-        throw Exception('extra of type File must be set');
-      }
-
-      return PreviewScreen(cacheImage: cacheImage);
-    },
-  );
+  static const routeName = '/preview';
 }
 
 class _PreviewScreenState extends ConsumerState<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as PreviewScreenArguments;
+    final cacheImage = args.cacheImage;
+
     final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
@@ -46,14 +34,14 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
           children: [
             Expanded(
               child: Image.file(
-                widget.cacheImage,
+                cacheImage,
                 height: double.infinity,
                 width: double.infinity,
                 alignment: Alignment.center,
               ),
             ),
             IconButton(
-              onPressed: _createTodo,
+              onPressed: () => _createTodo(cacheImage),
               icon: const Icon(Icons.save),
               style: IconButton.styleFrom(
                 backgroundColor: primaryColor,
@@ -65,12 +53,20 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
     );
   }
 
-  Future<void> _createTodo() async {
-    final cacheImage = widget.cacheImage;
+  Future<void> _createTodo(File cacheImage) async {
     final notifier = ref.read(todosNotifier);
 
     await notifier.createTodo(cacheImage: cacheImage);
     await cacheImage.delete();
-    if (mounted) context.pop();
+    if (mounted) Navigator.of(context).pop();
   }
+}
+
+@immutable
+class PreviewScreenArguments {
+  const PreviewScreenArguments({
+    required this.cacheImage,
+  });
+
+  final File cacheImage;
 }

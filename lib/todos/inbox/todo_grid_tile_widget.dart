@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../shared/db/tables/todos_table.dart';
-import '../todos_notifier.dart';
+import '../../shared/shared.dart';
+import '../shared/todos_notifier.dart';
 import 'todo_screen.dart';
 
 @immutable
@@ -66,9 +65,9 @@ class TodoGridTileWidget extends ConsumerWidget {
   }
 
   void _gotoDetails(BuildContext context) {
-    context.pushNamed(
+    Navigator.of(context).pushNamed(
       TodoScreen.routeName,
-      params: {'todoId': todo.id.toString()},
+      arguments: TodoScreenArguments(todoId: todo.id),
     );
   }
 }
