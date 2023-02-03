@@ -1,11 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../camera/camera_screen.dart';
 import '../shared/show_all_mode_notifier.dart';
 import '../shared/todos_notifier.dart';
 import 'todos_by_day_widget.dart';
-import 'todos_by_tag_widget.dart';
 
 @immutable
 class InboxScreen extends ConsumerStatefulWidget {
@@ -18,8 +19,7 @@ class InboxScreen extends ConsumerStatefulWidget {
 }
 
 class _InboxScreenState extends ConsumerState<InboxScreen> {
-  var _currentTabIndex = 0;
-  final _tabs = const [TodosByDayWidget(), TodosByTagWidget()];
+  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -51,25 +51,11 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _goToCamera,
+        onPressed: _createTodo,
         child: const Icon(Icons.add),
       ),
-      body: SafeArea(
-        child: _tabs[_currentTabIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: _changeCurrentTabIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inbox),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.discount),
-            label: 'Tags',
-          ),
-        ],
+      body: const SafeArea(
+        child: TodosByDayWidget(),
       ),
     );
   }
@@ -83,12 +69,16 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     }
   }
 
-  void _goToCamera() {
-    Navigator.of(context).pushReplacementNamed(CameraScreen.routeName);
-  }
+  Future<void> _createTodo() async {
+    final notifier = ref.read(todosNotifier);
 
-  void _changeCurrentTabIndex(int value) {
-    setState(() => _currentTabIndex = value);
+    final xfile = await _picker.pickImage(source: ImageSource.camera);
+    if(xfile == null) {
+      return;
+    }
+
+    final file = File(xfile.path);
+    await notifier.createTodo(cacheImage: file);
   }
 }
 

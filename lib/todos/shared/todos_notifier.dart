@@ -31,7 +31,6 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
 
   Future<void> createTodo({
     required File cacheImage,
-    String? tag,
   }) async {
     final todosTable = GetIt.I<TodosTable>();
 
@@ -44,7 +43,7 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     final image = await cacheImage.copy(imagePath);
 
     try {
-      final create = CreateTodo(imagePath: image.path, tag: tag);
+      final create = CreateTodo(imagePath: image.path);
       final todo = await todosTable.create(create);
 
       state = [todo, ...state];
@@ -52,21 +51,6 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
       await image.delete();
       rethrow;
     }
-  }
-
-  Future<void> changeTodoTag(
-    int todoId, {
-    String? tag,
-  }) async {
-    final todosTable = GetIt.I<TodosTable>();
-
-    final prev = state.firstWhere((todo) => todo.id == todoId);
-    if (tag == prev.tag) return;
-
-    final update = prev.copyWith(tag: tag).toUpdate();
-    final curr = await todosTable.update(update);
-
-    state = state.map((todo) => todo.id == todoId ? curr : todo).toList();
   }
 }
 
