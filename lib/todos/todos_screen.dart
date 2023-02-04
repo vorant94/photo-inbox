@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:mobile/todos/camera_screen.dart';
 
 import './state/show_all_mode.dart';
 import './state/todos.dart';
@@ -22,8 +22,6 @@ class TodosScreen extends ConsumerStatefulWidget {
 }
 
 class _TodosScreenState extends ConsumerState<TodosScreen> {
-  final _picker = ImagePicker();
-
   @override
   void initState() {
     super.initState();
@@ -73,12 +71,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
   }
 
   Future<void> _createTodo() async {
-    final notifier = ref.read(todosProvider.notifier);
-
-    final xFile = await _picker.pickImage(source: ImageSource.camera);
-    if (xFile == null) return;
-
-    await notifier.create(xImage: xFile);
+    context.pushNamed(CameraScreen.routeName);
   }
 }
 

@@ -1,14 +1,19 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
+import 'package:mobile/todos/camera_screen.dart';
 
 import 'todos/models/todo.dart';
 import 'todos/todo_screen.dart';
 import 'todos/todos_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  CameraScreen.cameras = await availableCameras();
+
   GetIt.I.registerSingleton(await Isar.open([TodoSchema]));
 
   runApp(const ProviderScope(child: MyApp()));
@@ -36,9 +41,10 @@ final _router = GoRouter(
       path: '/',
       // TODO how to use here named redirect?
       redirect: (BuildContext context, GoRouterState state) =>
-          TodosScreen.route.path,
+      TodosScreen.route.path,
     ),
     TodosScreen.route,
     TodoScreen.route,
+    CameraScreen.route,
   ],
 );

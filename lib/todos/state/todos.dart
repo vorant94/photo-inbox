@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +43,7 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     final todo = await isar.todos.get(id);
     if (todo == null) throw Exception('Todo not found');
 
-    state = [todo, ...state];
+    state = [...state, todo];
   }
 
   Future<void> toggleIsCompleted(int id) async {
