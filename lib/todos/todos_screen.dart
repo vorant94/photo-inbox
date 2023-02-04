@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import './state/show_all_mode.dart';
 import './state/todos.dart';
 import './widgets/todos_by_day_widget.dart';
 
-@immutable
 class TodosScreen extends ConsumerStatefulWidget {
   const TodosScreen({super.key});
 
   @override
   ConsumerState<TodosScreen> createState() => _TodosScreenState();
 
-  static const routeName = '/inbox';
+  static const routeName = 'todos';
+  static final route = GoRoute(
+    name: TodosScreen.routeName,
+    path: '/todos',
+    builder: (context, state) => const TodosScreen(),
+  );
 }
 
 class _TodosScreenState extends ConsumerState<TodosScreen> {

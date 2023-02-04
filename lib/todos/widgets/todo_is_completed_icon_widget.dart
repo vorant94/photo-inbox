@@ -8,7 +8,7 @@ class TodoIsCompletedIconWidget extends ConsumerWidget {
   const TodoIsCompletedIconWidget({
     required this.todo,
     this.isInverse = true,
-    super.key
+    super.key,
   });
 
   final Todo todo;

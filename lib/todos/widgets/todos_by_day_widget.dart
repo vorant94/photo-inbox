@@ -23,13 +23,8 @@ class TodosByDayWidget extends ConsumerWidget {
             itemCount: keys.length,
             separatorBuilder: (context, index) => const SizedBox(height: 15),
             itemBuilder: (context, index) {
-              final day = keys[index];
+              final label = DateFormat.yMMMEd().format(keys[index]);
               final todos = maps[keys[index]]!;
-
-              final label = Text(
-                DateFormat.yMMMEd().format(day),
-                style: Theme.of(context).textTheme.bodyText1,
-              );
 
               return TodosByDayGridWidget(label: label, todos: todos);
             },
@@ -37,7 +32,8 @@ class TodosByDayWidget extends ConsumerWidget {
   }
 }
 
-final _todosByDayProvider = Provider.autoDispose<Map<DateTime, List<Todo>>>((ref) {
+final _todosByDayProvider =
+    Provider.autoDispose<Map<DateTime, List<Todo>>>((ref) {
   final todos = ref.watch(filteredTodosProvider);
 
   return groupBy(todos, (todo) {

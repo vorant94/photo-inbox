@@ -7,30 +7,14 @@ import 'package:isar/isar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'show_all_mode.dart';
-import '../models/todo.dart';
 import '../../shared/io/directory.dart';
+import '../models/todo.dart';
+import 'show_all_mode.dart';
 
 class TodosNotifier extends StateNotifier<List<Todo>> {
   TodosNotifier() : super([]);
 
   final _imagesDir = 'todo-images';
-
-  Future<void> toggleIsCompleted(int id) async {
-    final isar = GetIt.I<Isar>();
-
-    final update = await isar.writeTxn(() async {
-      final todo = await isar.todos.get(id);
-      if (todo == null) throw Exception('Todo not found');
-
-      todo.isCompleted = !todo.isCompleted;
-      await isar.todos.put(todo);
-
-      return todo;
-    });
-
-    state = state.map((prev) => prev.id == id ? update : prev).toList();
-  }
 
   Future<void> fetchAll() async {
     final isar = GetIt.I<Isar>();
@@ -62,6 +46,22 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     state = [todo, ...state];
   }
 
+  Future<void> toggleIsCompleted(int id) async {
+    final isar = GetIt.I<Isar>();
+
+    final update = await isar.writeTxn(() async {
+      final todo = await isar.todos.get(id);
+      if (todo == null) throw Exception('Todo not found');
+
+      todo.isCompleted = !todo.isCompleted;
+      await isar.todos.put(todo);
+
+      return todo;
+    });
+
+    state = state.map((prev) => prev.id == id ? update : prev).toList();
+  }
+
   Future<void> delete(int id) async {
     final isar = GetIt.I<Isar>();
 
@@ -86,4 +86,5 @@ final filteredTodosProvider = Provider.autoDispose<List<Todo>>((ref) {
 });
 
 final todosProvider =
-    StateNotifierProvider.autoDispose<TodosNotifier, List<Todo>>((ref) => TodosNotifier());
+    StateNotifierProvider.autoDispose<TodosNotifier, List<Todo>>(
+        (ref) => TodosNotifier());

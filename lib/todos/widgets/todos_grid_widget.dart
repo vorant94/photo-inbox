@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/todo.dart';
 import 'todo_grid_tile_widget.dart';
 
-@immutable
 class TodosByDayGridWidget extends StatelessWidget {
   const TodosByDayGridWidget({
     required this.label,
@@ -11,7 +10,7 @@ class TodosByDayGridWidget extends StatelessWidget {
     super.key,
   });
 
-  final Text label;
+  final String label;
   final List<Todo> todos;
 
   @override
@@ -19,7 +18,7 @@ class TodosByDayGridWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        label,
+        Text(label, style: Theme.of(context).textTheme.bodyText1),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

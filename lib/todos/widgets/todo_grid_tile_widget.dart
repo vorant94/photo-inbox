@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/todo.dart';
 import '../todo_screen.dart';
 import 'todo_is_completed_icon_widget.dart';
 
-@immutable
 class TodoGridTileWidget extends ConsumerWidget {
   const TodoGridTileWidget({
     required this.todo,
@@ -19,7 +19,7 @@ class TodoGridTileWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () => _gotoDetails(context),
+      onTap: () => _gotoTodo(context),
       child: Stack(
         children: [
           Container(
@@ -48,10 +48,8 @@ class TodoGridTileWidget extends ConsumerWidget {
     );
   }
 
-  void _gotoDetails(BuildContext context) {
-    Navigator.of(context).pushNamed(
-      TodoScreen.routeName,
-      arguments: TodoScreenArguments(todoId: todo.id),
-    );
+  void _gotoTodo(BuildContext context) {
+    context.pushNamed(TodoScreen.routeName,
+        params: {'todoId': todo.id.toString()});
   }
 }

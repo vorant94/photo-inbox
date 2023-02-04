@@ -2,29 +2,36 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'widgets/todo_is_completed_icon_widget.dart';
+import 'package:go_router/go_router.dart';
 
 import 'models/todo.dart';
 import 'state/todos.dart';
+import 'widgets/todo_is_completed_icon_widget.dart';
 
-@immutable
 class TodoScreen extends ConsumerStatefulWidget {
-  const TodoScreen({super.key});
+  const TodoScreen({
+    required this.todoId,
+    super.key,
+  });
+
+  final int todoId;
 
   @override
   ConsumerState<TodoScreen> createState() => _TodoScreenState();
 
-  static const routeName = '/todo';
+  static const routeName = 'todo';
+  static final route = GoRoute(
+    name: TodoScreen.routeName,
+    path: '/todo/:todoId',
+    builder: (context, state) =>
+        TodoScreen(todoId: int.parse(state.params['todoId']!)),
+  );
 }
 
 class _TodoScreenState extends ConsumerState<TodoScreen> {
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as TodoScreenArguments;
-    final todoId = args.todoId;
-
-    final todo = ref.watch(_todoProvider(todoId));
+    final todo = ref.watch(_todoProvider(widget.todoId));
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -43,8 +50,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                 child: Text('Delete'),
               )
             ],
-            onSelected: (_PopupMenuActions value) =>
-                _onPopupMenuSelected(value, todo),
+            onSelected: _onPopupMenuSelected,
           )
         ],
       ),
@@ -57,26 +63,15 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     );
   }
 
-  void _onPopupMenuSelected(
-    _PopupMenuActions value,
-    Todo todo,
-  ) {
+  void _onPopupMenuSelected(_PopupMenuActions value) {
     switch (value) {
       case _PopupMenuActions.delete:
         final notifier = ref.read(todosProvider.notifier);
-        notifier.delete(todo.id);
-        Navigator.of(context).pop();
+        notifier.delete(widget.todoId);
+        context.pop();
         break;
     }
   }
-}
-
-class TodoScreenArguments {
-  const TodoScreenArguments({
-    required this.todoId,
-  });
-
-  final int todoId;
 }
 
 final _todoProvider = Provider.autoDispose.family<Todo, int>((ref, todoId) =>
