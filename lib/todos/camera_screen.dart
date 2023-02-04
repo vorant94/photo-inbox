@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../shared/camera/camera_value.dart';
 import 'state/todos.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -28,10 +29,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   @override
   void initState() {
     super.initState();
+
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
     );
+
     _controller = CameraController(
       CameraScreen.cameras.first,
       ResolutionPreset.high,
@@ -43,59 +46,62 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   @override
   void dispose() {
     _controller.dispose();
+
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme
-        .of(context)
-        .primaryColor;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: FutureBuilder(
-          // TODO why _controller.initialize() can't be used here right away?
-          //  (it fails upon second camera opening or even crashes)
-          future: _initializeControllerFuture,
-          builder: (context, snapshot) =>
-          snapshot.connectionState == ConnectionState.done
-              ? Column(
-            children: [
-              CameraPreview(_controller),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    onPressed: _createCamera,
-                    style: IconButton.styleFrom(
-                      backgroundColor: primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          )
-              : const Center(child: CircularProgressIndicator()),
+        child: Center(
+          child: FutureBuilder(
+            future: _initializeControllerFuture,
+            builder: (context, snapshot) {
+              return snapshot.connectionState != ConnectionState.done
+                  ? const CircularProgressIndicator()
+                  : AspectRatio(
+                      aspectRatio: _controller.value.aspectRatioInverted,
+                      child: Stack(
+                        children: [
+                          CameraPreview(_controller),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: double.infinity,
+                              height: 50,
+                              padding: const EdgeInsets.all(10),
+                              color: Colors.black54,
+                              child: TextButton(
+                                onPressed: _createTodo,
+                                child: const Text('Take photo'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Future<void> _createCamera() async {
+  Future<void> _createTodo() async {
     await _initializeControllerFuture;
 
-    final notifier = ref.read(todosProvider.notifier);
+    final todoNotifier = ref.read(todosProvider.notifier);
 
     final xFile = await _controller.takePicture();
 
-    await notifier.create(xImage: xFile);
+    await todoNotifier.create(xImage: xFile);
 
     if (mounted) {
       context.pop();
