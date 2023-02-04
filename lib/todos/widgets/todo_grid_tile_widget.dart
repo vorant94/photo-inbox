@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/todos/inbox/todo_completed_icon_widget.dart';
 
-import '../../shared/shared.dart';
-import 'todo_screen.dart';
+import '../models/todo.dart';
+import '../todo_screen.dart';
+import 'todo_is_completed_icon_widget.dart';
 
 @immutable
 class TodoGridTileWidget extends ConsumerWidget {
@@ -41,7 +41,7 @@ class TodoGridTileWidget extends ConsumerWidget {
           ),
           Align(
             alignment: Alignment.topRight,
-            child: TodoCompletedIconWidget(todo: todo),
+            child: TodoIsCompletedIconWidget(todo: todo),
           ),
         ],
       ),

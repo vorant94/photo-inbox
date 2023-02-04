@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../../shared/shared.dart';
+import '../models/todo.dart';
 import 'todo_grid_tile_widget.dart';
 
 @immutable
 class TodosByDayGridWidget extends StatelessWidget {
   const TodosByDayGridWidget({
-    required this.day,
+    required this.label,
     required this.todos,
     super.key,
   });
 
-  final DateTime day;
+  final Text label;
   final List<Todo> todos;
 
   @override
@@ -20,10 +19,7 @@ class TodosByDayGridWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          DateFormat.yMMMEd().format(day),
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
+        label,
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

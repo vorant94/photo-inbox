@@ -39,11 +39,12 @@ dependencies:
   collection: ^1.16.0
   intl: ^0.18.0
   flutter_riverpod: ^2.1.1
-  sqflite: ^2.2.2
   path: ^1.8.2
   path_provider: ^2.0.11
   get_it: ^7.2.0
   image_picker: ^0.8.6+1
+  isar: ^3.0.5
+  isar_flutter_libs: ^3.0.5
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +56,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
+  isar_generator: ^3.0.5
+  build_runner: ^2.3.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:isar/isar.dart';
 
-import 'shared/shared.dart';
-import 'todos/todos.dart';
+import 'todos/models/todo.dart';
+import 'todos/todos_screen.dart';
+import 'todos/todo_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  GetIt.I.registerSingleton(const TodosTable());
+  GetIt.I.registerSingleton(await Isar.open([TodoSchema]));
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -25,9 +25,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      initialRoute: InboxScreen.routeName,
+      initialRoute: TodosScreen.routeName,
       routes: {
-        InboxScreen.routeName: (context) => const InboxScreen(),
+        TodosScreen.routeName: (context) => const TodosScreen(),
         TodoScreen.routeName: (context) => const TodoScreen(),
       },
     );

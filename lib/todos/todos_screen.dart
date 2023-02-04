@@ -1,33 +1,31 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../shared/show_all_mode_notifier.dart';
-import '../shared/todos_notifier.dart';
-import 'todos_by_day_widget.dart';
+import './state/show_all_mode.dart';
+import './state/todos.dart';
+import './widgets/todos_by_day_widget.dart';
 
 @immutable
-class InboxScreen extends ConsumerStatefulWidget {
-  const InboxScreen({super.key});
+class TodosScreen extends ConsumerStatefulWidget {
+  const TodosScreen({super.key});
 
   @override
-  ConsumerState<InboxScreen> createState() => _InboxScreenState();
+  ConsumerState<TodosScreen> createState() => _TodosScreenState();
 
   static const routeName = '/inbox';
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> {
+class _TodosScreenState extends ConsumerState<TodosScreen> {
   final _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
 
-    final notifier = ref.read(todosNotifier);
+    final notifier = ref.read(todosProvider.notifier);
 
-    notifier.fetchTodos();
+    notifier.fetchAll();
   }
 
   @override
@@ -63,22 +61,19 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   void _onPopupMenuSelected(_PopupMenuActions value) {
     switch (value) {
       case _PopupMenuActions.toggleShowAllMode:
-        final notifier = ref.read(showAllModeNotifier);
-        notifier.toggleShowAllMode();
+        final notifier = ref.read(showAllModeProvider.notifier);
+        notifier.toggle();
         break;
     }
   }
 
   Future<void> _createTodo() async {
-    final notifier = ref.read(todosNotifier);
+    final notifier = ref.read(todosProvider.notifier);
 
-    final xfile = await _picker.pickImage(source: ImageSource.camera);
-    if(xfile == null) {
-      return;
-    }
+    final xFile = await _picker.pickImage(source: ImageSource.camera);
+    if (xFile == null) return;
 
-    final file = File(xfile.path);
-    await notifier.createTodo(cacheImage: file);
+    await notifier.create(xImage: xFile);
   }
 }
 

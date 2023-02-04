@@ -1,10 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-import '../../shared/shared.dart';
-import '../shared/todos_notifier.dart';
-import 'todos_by_day_grid_widget.dart';
+import '../models/todo.dart';
+import '../state/todos.dart';
+import 'todos_grid_widget.dart';
 
 class TodosByDayWidget extends ConsumerWidget {
   const TodosByDayWidget({super.key});
@@ -25,14 +26,19 @@ class TodosByDayWidget extends ConsumerWidget {
               final day = keys[index];
               final todos = maps[keys[index]]!;
 
-              return TodosByDayGridWidget(day: day, todos: todos);
+              final label = Text(
+                DateFormat.yMMMEd().format(day),
+                style: Theme.of(context).textTheme.bodyText1,
+              );
+
+              return TodosByDayGridWidget(label: label, todos: todos);
             },
           );
   }
 }
 
-final _todosByDayProvider = Provider<Map<DateTime, List<Todo>>>((ref) {
-  final todos = ref.watch(todosProvider);
+final _todosByDayProvider = Provider.autoDispose<Map<DateTime, List<Todo>>>((ref) {
+  final todos = ref.watch(filteredTodosProvider);
 
   return groupBy(todos, (todo) {
     final date = todo.createdDate;
