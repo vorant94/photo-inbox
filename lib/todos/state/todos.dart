@@ -53,7 +53,9 @@ class Todos extends _$Todos {
     state = [todo, ...state];
   }
 
-  Future<void> toggleIsCompleted(Id id) async {
+  Future<void> toggleIsCompleted({
+    required Id id,
+  }) async {
     final isar = GetIt.I<Isar>();
 
     final update = await isar.writeTxn(() async {
@@ -69,7 +71,9 @@ class Todos extends _$Todos {
     state = state.map((prev) => prev.id == id ? update : prev).toList();
   }
 
-  Future<void> delete(int id) async {
+  Future<void> delete({
+    required Id id,
+  }) async {
     final isar = GetIt.I<Isar>();
 
     await isar.writeTxn(() async {

@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
-import 'package:mobile/todos/camera_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'todos/camera_screen.dart';
 import 'todos/models/todo.dart';
+import 'todos/preview_screen.dart';
 import 'todos/todo_screen.dart';
 import 'todos/todos_screen.dart';
 
@@ -48,5 +49,6 @@ final _router = GoRouter(
     TodosScreen.route,
     TodoScreen.route,
     CameraScreen.route,
+    PreviewScreen.route,
   ],
 );

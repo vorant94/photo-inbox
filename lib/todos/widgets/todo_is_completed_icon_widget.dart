@@ -33,6 +33,6 @@ class TodoIsCompletedIconWidget extends ConsumerWidget {
   void _toggleIsCompleted(WidgetRef ref) {
     final notifier = ref.read(todosProvider.notifier);
 
-    notifier.toggleIsCompleted(todo.id);
+    notifier.toggleIsCompleted(id: todo.id);
   }
 }

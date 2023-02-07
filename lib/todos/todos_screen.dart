@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/todos/camera_screen.dart';
 
 import './state/show_all_mode.dart';
 import './widgets/todos_by_day_widget.dart';
+import 'camera_screen.dart';
 
 class TodosScreen extends ConsumerWidget {
   const TodosScreen({super.key});
@@ -34,9 +34,7 @@ class TodosScreen extends ConsumerWidget {
         onPressed: () => _createTodo(context),
         child: const Icon(Icons.add),
       ),
-      body: const SafeArea(
-        child: TodosByDayWidget(),
-      ),
+      body: const TodosByDayWidget(),
     );
   }
 

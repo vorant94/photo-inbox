@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../shared/camera/camera_value.dart';
-import 'state/todos.dart';
+import 'preview_screen.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -23,8 +23,8 @@ class CameraScreen extends ConsumerStatefulWidget {
 }
 
 class _CameraScreenState extends ConsumerState<CameraScreen> {
-  late final CameraController _controller;
-  late final Future<void> _initializeControllerFuture;
+  late final CameraController controller;
+  late final Future<void> initializeControllerFuture;
 
   @override
   void initState() {
@@ -35,17 +35,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       overlays: [SystemUiOverlay.bottom],
     );
 
-    _controller = CameraController(
+    controller = CameraController(
       CameraScreen.cameras.first,
       ResolutionPreset.high,
       enableAudio: false,
     );
-    _initializeControllerFuture = _controller.initialize();
+    initializeControllerFuture = controller.initialize();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
 
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
@@ -59,52 +59,54 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Center(
-          child: FutureBuilder(
-            future: _initializeControllerFuture,
-            builder: (context, snapshot) {
-              return snapshot.connectionState != ConnectionState.done
-                  ? const CircularProgressIndicator()
-                  : AspectRatio(
-                      aspectRatio: _controller.value.aspectRatioInverted,
-                      child: Stack(
-                        children: [
-                          CameraPreview(_controller),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: double.infinity,
-                              height: 50,
-                              padding: const EdgeInsets.all(10),
-                              color: Colors.black54,
-                              child: TextButton(
-                                onPressed: _createTodo,
-                                child: const Text('Take photo'),
-                              ),
+      body: Center(
+        child: FutureBuilder(
+          future: initializeControllerFuture,
+          builder: (context, snapshot) {
+            return snapshot.connectionState != ConnectionState.done
+                ? const CircularProgressIndicator()
+                : AspectRatio(
+                    aspectRatio: controller.value.aspectRatioInverted,
+                    child: Stack(
+                      children: [
+                        CameraPreview(controller),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            height: 50,
+                            padding: const EdgeInsets.all(10),
+                            color: Colors.black54,
+                            child: TextButton(
+                              onPressed: takePicture,
+                              child: const Text('Take photo'),
                             ),
                           ),
-                        ],
-                      ),
-                    );
-            },
-          ),
+                        ),
+                      ],
+                    ),
+                  );
+          },
         ),
       ),
     );
   }
 
-  Future<void> _createTodo() async {
-    await _initializeControllerFuture;
+  Future<void> takePicture() async {
+    await initializeControllerFuture;
 
-    final todoNotifier = ref.read(todosProvider.notifier);
+    final xImage = await controller.takePicture();
 
-    final xImage = await _controller.takePicture();
-
-    await todoNotifier.create(xImage: xImage);
-
-    if (mounted) {
-      context.pop();
+    if (!mounted) {
+      return;
     }
+
+    context.pushNamed(
+      PreviewScreen.routeName,
+      extra: PreviewScreenExtra(
+        xImage: xImage,
+        ratio: controller.value.aspectRatioInverted,
+      ),
+    );
   }
 }

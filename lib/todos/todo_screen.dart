@@ -35,7 +35,6 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         actions: [
           TodoIsCompletedIconWidget(
@@ -50,7 +49,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
                 child: Text('Delete'),
               )
             ],
-            onSelected: _onPopupMenuSelected,
+            onSelected: onPopupMenuSelected,
           )
         ],
       ),
@@ -63,11 +62,11 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     );
   }
 
-  void _onPopupMenuSelected(_PopupMenuActions value) {
+  void onPopupMenuSelected(_PopupMenuActions value) {
     switch (value) {
       case _PopupMenuActions.delete:
         final notifier = ref.read(todosProvider.notifier);
-        notifier.delete(widget.todoId);
+        notifier.delete(id: widget.todoId);
         context.pop();
         break;
     }
