@@ -1,22 +1,29 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:collection/collection.dart';
 
 import '../../shared/io/directory.dart';
 import '../models/todo.dart';
 import 'show_all_mode.dart';
 
-class TodosNotifier extends StateNotifier<List<Todo>> {
-  TodosNotifier() : super([]);
+part 'todos.g.dart';
 
+@riverpod
+class Todos extends _$Todos {
   final _imagesDir = 'todo-images';
 
-  Future<void> fetchAll() async {
+  @override
+  List<Todo> build() {
+    return [];
+  }
+
+  Future<void> fetchFromDb() async {
     final isar = GetIt.I<Isar>();
 
     state = await isar.todos.where().sortByCreatedDateDesc().findAll();
@@ -34,19 +41,17 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     final imagePath = join(imagesDirPath, imageName);
     await xImage.saveTo(imagePath);
 
-    final id = await isar.writeTxn(() async {
+    final todo = await isar.writeTxn(() async {
       final todo = Todo()..imagePath = imagePath;
 
-      return await isar.todos.put(todo);
+      final id = await isar.todos.put(todo);
+      return await isar.todos.get(id) as Todo;
     });
-
-    final todo = await isar.todos.get(id);
-    if (todo == null) throw Exception('Todo not found');
 
     state = [todo, ...state];
   }
 
-  Future<void> toggleIsCompleted(int id) async {
+  Future<void> toggleIsCompleted(Id id) async {
     final isar = GetIt.I<Isar>();
 
     final update = await isar.writeTxn(() async {
@@ -76,15 +81,30 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
   }
 }
 
-final filteredTodosProvider = Provider.autoDispose<List<Todo>>((ref) {
+@riverpod
+List<Todo> filteredTodos(FilteredTodosRef ref) {
   final allTodos = ref.watch(todosProvider);
   final showAllMode = ref.watch(showAllModeProvider);
 
   return showAllMode
       ? allTodos
       : allTodos.where((todo) => !todo.isCompleted).toList();
-});
+}
 
-final todosProvider =
-    StateNotifierProvider.autoDispose<TodosNotifier, List<Todo>>(
-        (ref) => TodosNotifier());
+@riverpod
+Map<DateTime, List<Todo>> todosByDay(TodosByDayRef ref) {
+  final todos = ref.watch(filteredTodosProvider);
+
+  return groupBy(todos, (todo) {
+    final date = todo.createdDate;
+
+    return DateTime(date.year, date.month, date.day);
+  });
+}
+
+@riverpod
+Todo todo(TodoRef ref, Id todoId) {
+  return ref
+      .watch(filteredTodosProvider)
+      .firstWhere((todo) => todo.id == todoId);
+}

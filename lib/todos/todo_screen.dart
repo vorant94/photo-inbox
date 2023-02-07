@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isar/isar.dart';
 
-import 'models/todo.dart';
 import 'state/todos.dart';
 import 'widgets/todo_is_completed_icon_widget.dart';
 
@@ -14,7 +14,7 @@ class TodoScreen extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final int todoId;
+  final Id todoId;
 
   @override
   ConsumerState<TodoScreen> createState() => _TodoScreenState();
@@ -31,7 +31,7 @@ class TodoScreen extends ConsumerStatefulWidget {
 class _TodoScreenState extends ConsumerState<TodoScreen> {
   @override
   Widget build(BuildContext context) {
-    final todo = ref.watch(_todoProvider(widget.todoId));
+    final todo = ref.watch(todoProvider(widget.todoId));
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -73,9 +73,6 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     }
   }
 }
-
-final _todoProvider = Provider.autoDispose.family<Todo, int>((ref, todoId) =>
-    ref.watch(filteredTodosProvider).firstWhere((todo) => todo.id == todoId));
 
 enum _PopupMenuActions {
   delete,

@@ -28,7 +28,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
 
     final notifier = ref.read(todosProvider.notifier);
 
-    notifier.fetchAll();
+    notifier.fetchFromDb();
   }
 
   @override

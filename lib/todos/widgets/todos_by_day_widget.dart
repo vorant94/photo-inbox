@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../models/todo.dart';
 import '../state/todos.dart';
 import 'todos_grid_widget.dart';
 
@@ -12,7 +11,7 @@ class TodosByDayWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final maps = ref.watch(_todosByDayProvider);
+    final maps = ref.watch(todosByDayProvider);
     final keys = maps.keys.toList();
 
     return maps.isEmpty
@@ -32,14 +31,3 @@ class TodosByDayWidget extends ConsumerWidget {
           );
   }
 }
-
-final _todosByDayProvider =
-    Provider.autoDispose<Map<DateTime, List<Todo>>>((ref) {
-  final todos = ref.watch(filteredTodosProvider);
-
-  return groupBy(todos, (todo) {
-    final date = todo.createdDate;
-
-    return DateTime(date.year, date.month, date.day);
-  });
-});
