@@ -19,7 +19,7 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
   Future<void> fetchAll() async {
     final isar = GetIt.I<Isar>();
 
-    state = await isar.todos.where().findAll();
+    state = await isar.todos.where().sortByCreatedDateDesc().findAll();
   }
 
   Future<void> create({
@@ -43,7 +43,7 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     final todo = await isar.todos.get(id);
     if (todo == null) throw Exception('Todo not found');
 
-    state = [...state, todo];
+    state = [todo, ...state];
   }
 
   Future<void> toggleIsCompleted(int id) async {

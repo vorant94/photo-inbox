@@ -24,7 +24,8 @@ class TodosByDayWidget extends ConsumerWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 15),
             itemBuilder: (context, index) {
               final label = DateFormat.yMMMEd().format(keys[index]);
-              final todos = maps[keys[index]]!;
+              final todos =
+                  maps[keys[index]]!.sortedBy((element) => element.createdDate);
 
               return TodosByDayGridWidget(label: label, todos: todos);
             },
