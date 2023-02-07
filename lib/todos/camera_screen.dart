@@ -99,9 +99,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
     final todoNotifier = ref.read(todosProvider.notifier);
 
-    final xFile = await _controller.takePicture();
+    final xImage = await _controller.takePicture();
 
-    await todoNotifier.create(xImage: xFile);
+    await todoNotifier.create(xImage: xImage);
 
     if (mounted) {
       context.pop();

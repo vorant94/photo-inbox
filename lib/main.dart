@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:mobile/todos/camera_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'todos/models/todo.dart';
 import 'todos/todo_screen.dart';
@@ -15,6 +16,7 @@ Future<void> main() async {
   CameraScreen.cameras = await availableCameras();
 
   GetIt.I.registerSingleton(await Isar.open([TodoSchema]));
+  GetIt.I.registerSingleton(await SharedPreferences.getInstance());
 
   runApp(const ProviderScope(child: MyApp()));
 }

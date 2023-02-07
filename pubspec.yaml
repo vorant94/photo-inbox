@@ -53,6 +53,7 @@ dependencies:
       path: packages/camera/camera
       ref: 9e46048ad2e1f085c1e8f6c77391fa52025e681f
   riverpod_annotation: ^1.1.1
+  shared_preferences: ^2.0.17
 
 dev_dependencies:
   flutter_test:
