@@ -20,13 +20,15 @@ class Todos extends _$Todos {
 
   @override
   List<Todo> build() {
-    return [];
-  }
-
-  Future<void> fetchFromDb() async {
     final isar = GetIt.I<Isar>();
 
-    state = await isar.todos.where().sortByCreatedDateDesc().findAll();
+    isar.todos
+        .where()
+        .sortByCreatedDateDesc()
+        .findAll()
+        .then((value) => state = value);
+
+    return [];
   }
 
   Future<void> create({

@@ -4,35 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile/todos/camera_screen.dart';
 
 import './state/show_all_mode.dart';
-import './state/todos.dart';
 import './widgets/todos_by_day_widget.dart';
 
-class TodosScreen extends ConsumerStatefulWidget {
+class TodosScreen extends ConsumerWidget {
   const TodosScreen({super.key});
 
   @override
-  ConsumerState<TodosScreen> createState() => _TodosScreenState();
-
-  static const routeName = 'todos';
-  static final route = GoRoute(
-    name: TodosScreen.routeName,
-    path: '/todos',
-    builder: (context, state) => const TodosScreen(),
-  );
-}
-
-class _TodosScreenState extends ConsumerState<TodosScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    final notifier = ref.read(todosProvider.notifier);
-
-    notifier.fetchFromDb();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final showAllMode = ref.watch(showAllModeProvider);
 
     return Scaffold(
@@ -43,16 +21,17 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [
               PopupMenuItem(
-                value: _PopupMenuActions.toggleShowAllMode,
+                value: _PopupMenuAction.toggleShowAllMode,
                 child: Text(showAllMode ? 'Show uncompleted only' : 'Show all'),
               )
             ],
-            onSelected: _onPopupMenuSelected,
+            onSelected: (_PopupMenuAction value) =>
+                _onPopupMenuSelected(ref, value),
           )
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _createTodo,
+        onPressed: () => _createTodo(context),
         child: const Icon(Icons.add),
       ),
       body: const SafeArea(
@@ -61,20 +40,27 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
     );
   }
 
-  void _onPopupMenuSelected(_PopupMenuActions value) {
+  void _onPopupMenuSelected(WidgetRef ref, _PopupMenuAction value) {
     switch (value) {
-      case _PopupMenuActions.toggleShowAllMode:
+      case _PopupMenuAction.toggleShowAllMode:
         final notifier = ref.read(showAllModeProvider.notifier);
         notifier.toggle();
         break;
     }
   }
 
-  Future<void> _createTodo() async {
+  Future<void> _createTodo(BuildContext context) async {
     context.pushNamed(CameraScreen.routeName);
   }
+
+  static const routeName = 'todos';
+  static final route = GoRoute(
+    name: TodosScreen.routeName,
+    path: '/todos',
+    builder: (context, state) => const TodosScreen(),
+  );
 }
 
-enum _PopupMenuActions {
+enum _PopupMenuAction {
   toggleShowAllMode,
 }
