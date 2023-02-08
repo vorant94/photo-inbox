@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:collection/collection.dart';
 
 import '../../shared/io/directory.dart';
 import '../models/todo.dart';
