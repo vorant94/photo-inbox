@@ -108,9 +108,16 @@ Map<DateTime, List<Todo>> todosByDay(TodosByDayRef ref) {
   });
 }
 
-@riverpod
-Todo todo(TodoRef ref, Id todoId) {
-  return ref
-      .watch(filteredTodosProvider)
-      .firstWhere((todo) => todo.id == todoId);
-}
+final todoProvider = Provider.autoDispose.family<Todo, Id>((ref, todoId) {
+  ref.listen<List<Todo>>(
+    filteredTodosProvider,
+    (previous, next) {
+      final todo = next.firstWhereOrNull((t) => t.id == todoId);
+      if (todo != null) {
+        ref.state = todo;
+      }
+    },
+    fireImmediately: true,
+  );
+  return ref.state;
+});
