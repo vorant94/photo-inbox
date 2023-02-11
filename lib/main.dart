@@ -30,13 +30,35 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Photo Inbox',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: const ColorScheme.light(primary: _primarySwatch),
         useMaterial3: true,
       ),
       routerConfig: _router,
     );
   }
 }
+
+const int _primaryColor = 0xFFFF7601;
+const MaterialColor _primarySwatch = MaterialColor(_primaryColor, {
+  50: Color(0xFFFFEFE1),
+  100: Color(0xFFFFD6B3),
+  200: Color(0xFFFFBB80),
+  300: Color(0xFFFF9F4D),
+  400: Color(0xFFFF8B27),
+  500: Color(_primaryColor),
+  600: Color(0xFFFF6E01),
+  700: Color(0xFFFF6301),
+  800: Color(0xFFFF5901),
+  900: Color(0xFFFF4600),
+});
+
+// const int _accentColor = 0xFFFFF5F2;
+// const MaterialColor _accentSwatch = MaterialColor(_accentColor, <int, Color>{
+//   100: Color(0xFFFFFFFF),
+//   200: Color(_accentColor),
+//   400: Color(0xFFFFCDBF),
+//   700: Color(0xFFFFB9A6),
+// });
 
 final _router = GoRouter(
   routes: [

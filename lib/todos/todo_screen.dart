@@ -37,10 +37,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         actions: [
-          TodoIsCompletedIconWidget(
-            todo: todo,
-            isInverse: false,
-          ),
+          TodoIsCompletedIconWidget(todo: todo),
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) => [

@@ -7,17 +7,14 @@ import '../state/todos.dart';
 class TodoIsCompletedIconWidget extends ConsumerWidget {
   const TodoIsCompletedIconWidget({
     required this.todo,
-    this.isInverse = true,
     super.key,
   });
 
   final Todo todo;
-  final bool isInverse;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final inversePrimary = Theme.of(context).colorScheme.inversePrimary;
-    final foregroundColor = isInverse ? inversePrimary : null;
+    final foregroundColor = Theme.of(context).colorScheme.primary;
 
     return IconButton(
       icon: const Icon(Icons.circle_outlined),

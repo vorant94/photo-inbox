@@ -57,36 +57,37 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: FutureBuilder(
-          future: initializeControllerFuture,
-          builder: (context, snapshot) {
-            return snapshot.connectionState != ConnectionState.done
-                ? const CircularProgressIndicator()
-                : AspectRatio(
-                    aspectRatio: controller.value.aspectRatioInverted,
-                    child: Stack(
-                      children: [
-                        CameraPreview(controller),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            width: double.infinity,
-                            height: 50,
-                            padding: const EdgeInsets.all(10),
-                            color: Colors.black54,
-                            child: TextButton(
-                              onPressed: takePicture,
-                              child: const Text('Take photo'),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: FutureBuilder(
+            future: initializeControllerFuture,
+            builder: (context, snapshot) {
+              return snapshot.connectionState != ConnectionState.done
+                  ? const CircularProgressIndicator()
+                  : AspectRatio(
+                      aspectRatio: controller.value.aspectRatioInverted,
+                      child: Stack(
+                        children: [
+                          CameraPreview(controller),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              color: Colors.black54,
+                              child: TextButton(
+                                onPressed: takePicture,
+                                child: const Text('Take photo'),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-          },
+                        ],
+                      ),
+                    );
+            },
+          ),
         ),
       ),
     );

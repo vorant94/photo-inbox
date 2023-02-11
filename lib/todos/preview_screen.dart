@@ -44,32 +44,34 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTap: toggleFullScreenMode,
-        child: Center(
-          child: AspectRatio(
-            aspectRatio: widget.ratio,
-            child: Image.file(
-              File(widget.xImage.path),
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Colors.black,
+        body: GestureDetector(
+          onTap: toggleFullScreenMode,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: widget.ratio,
+              child: Image.file(
+                File(widget.xImage.path),
+              ),
             ),
           ),
         ),
+        floatingActionButton: fullScreenMode
+            ? null
+            : FloatingActionButton(
+                onPressed: submit,
+                child: const Icon(Icons.save),
+              ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+        bottomNavigationBar: fullScreenMode
+            ? null
+            : BottomAppBar(
+                child: Row(children: const []),
+              ),
       ),
-      floatingActionButton: fullScreenMode
-          ? null
-          : FloatingActionButton(
-              onPressed: submit,
-              child: const Icon(Icons.save),
-            ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-      bottomNavigationBar: fullScreenMode
-          ? null
-          : BottomAppBar(
-              child: Row(children: const []),
-            ),
     );
   }
 
