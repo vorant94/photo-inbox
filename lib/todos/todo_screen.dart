@@ -50,11 +50,18 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
           )
         ],
       ),
-      body: Image.file(
-        File(todo.imagePath),
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.center,
+      body: FutureBuilder(
+        future: getTodoImageAbsolutePath(imageName: todo.imageName),
+        builder: (context, snapshot) {
+          return snapshot.connectionState != ConnectionState.done
+              ? const CircularProgressIndicator()
+              : Image.file(
+                  File(snapshot.data as String),
+                  height: double.infinity,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                );
+        },
       ),
     );
   }

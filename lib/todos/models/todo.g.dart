@@ -22,9 +22,9 @@ const TodoSchema = CollectionSchema(
       name: r'createdDate',
       type: IsarType.dateTime,
     ),
-    r'imagePath': PropertySchema(
+    r'imageName': PropertySchema(
       id: 1,
-      name: r'imagePath',
+      name: r'imageName',
       type: IsarType.string,
     ),
     r'isCompleted': PropertySchema(
@@ -53,7 +53,7 @@ int _todoEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.imagePath.length * 3;
+  bytesCount += 3 + object.imageName.length * 3;
   return bytesCount;
 }
 
@@ -64,7 +64,7 @@ void _todoSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.createdDate);
-  writer.writeString(offsets[1], object.imagePath);
+  writer.writeString(offsets[1], object.imageName);
   writer.writeBool(offsets[2], object.isCompleted);
 }
 
@@ -77,7 +77,7 @@ Todo _todoDeserialize(
   final object = Todo();
   object.createdDate = reader.readDateTime(offsets[0]);
   object.id = id;
-  object.imagePath = reader.readString(offsets[1]);
+  object.imageName = reader.readString(offsets[1]);
   object.isCompleted = reader.readBool(offsets[2]);
   return object;
 }
@@ -293,20 +293,20 @@ extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathEqualTo(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathGreaterThan(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -314,14 +314,14 @@ extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathLessThan(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -329,14 +329,14 @@ extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathBetween(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -345,7 +345,7 @@ extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'imagePath',
+        property: r'imageName',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -355,69 +355,69 @@ extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathStartsWith(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathEndsWith(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathContains(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'imagePath',
+        property: r'imageName',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathMatches(
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'imagePath',
+        property: r'imageName',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathIsEmpty() {
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'imagePath',
+        property: r'imageName',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterFilterCondition> imagePathIsNotEmpty() {
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> imageNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'imagePath',
+        property: r'imageName',
         value: '',
       ));
     });
@@ -451,15 +451,15 @@ extension TodoQuerySortBy on QueryBuilder<Todo, Todo, QSortBy> {
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterSortBy> sortByImagePath() {
+  QueryBuilder<Todo, Todo, QAfterSortBy> sortByImageName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'imagePath', Sort.asc);
+      return query.addSortBy(r'imageName', Sort.asc);
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterSortBy> sortByImagePathDesc() {
+  QueryBuilder<Todo, Todo, QAfterSortBy> sortByImageNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'imagePath', Sort.desc);
+      return query.addSortBy(r'imageName', Sort.desc);
     });
   }
 
@@ -501,15 +501,15 @@ extension TodoQuerySortThenBy on QueryBuilder<Todo, Todo, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterSortBy> thenByImagePath() {
+  QueryBuilder<Todo, Todo, QAfterSortBy> thenByImageName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'imagePath', Sort.asc);
+      return query.addSortBy(r'imageName', Sort.asc);
     });
   }
 
-  QueryBuilder<Todo, Todo, QAfterSortBy> thenByImagePathDesc() {
+  QueryBuilder<Todo, Todo, QAfterSortBy> thenByImageNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'imagePath', Sort.desc);
+      return query.addSortBy(r'imageName', Sort.desc);
     });
   }
 
@@ -533,10 +533,10 @@ extension TodoQueryWhereDistinct on QueryBuilder<Todo, Todo, QDistinct> {
     });
   }
 
-  QueryBuilder<Todo, Todo, QDistinct> distinctByImagePath(
+  QueryBuilder<Todo, Todo, QDistinct> distinctByImageName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'imagePath', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'imageName', caseSensitive: caseSensitive);
     });
   }
 
@@ -560,9 +560,9 @@ extension TodoQueryProperty on QueryBuilder<Todo, Todo, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Todo, String, QQueryOperations> imagePathProperty() {
+  QueryBuilder<Todo, String, QQueryOperations> imageNameProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'imagePath');
+      return query.addPropertyName(r'imageName');
     });
   }
 

@@ -29,7 +29,7 @@ class _SystemHash {
   }
 }
 
-String _$TodosHash() => r'8569fefe9ea800ae60af59bed4057b72fb218d91';
+String _$TodosHash() => r'050e73bd09c3294fe384926407ce6ea9d6fdf090';
 
 /// See also [Todos].
 final todosProvider = AutoDisposeNotifierProvider<Todos, List<Todo>>(

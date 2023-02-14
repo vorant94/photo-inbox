@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/todos/state/todos.dart';
 
 import '../models/todo.dart';
 import '../todo_screen.dart';
@@ -18,33 +19,40 @@ class TodoGridTileWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => _gotoTodo(context),
-      child: Stack(
-        children: [
-          Container(
-            constraints: const BoxConstraints.expand(),
-            child: Image.file(
-              File(todo.imagePath),
-              fit: BoxFit.cover,
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment(0.0, -0.25),
-                colors: [Colors.grey, Colors.transparent],
-              ),
-            ),
-            constraints: const BoxConstraints.expand(),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: TodoIsCompletedIconWidget(todo: todo),
-          ),
-        ],
-      ),
+    return FutureBuilder(
+      future: getTodoImageAbsolutePath(imageName: todo.imageName),
+      builder: (context, snapshot) {
+        return snapshot.connectionState != ConnectionState.done
+            ? const CircularProgressIndicator()
+            : GestureDetector(
+                onTap: () => _gotoTodo(context),
+                child: Stack(
+                  children: [
+                    Container(
+                      constraints: const BoxConstraints.expand(),
+                      child: Image.file(
+                        File(snapshot.data as String),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment(0.0, -0.25),
+                          colors: [Colors.grey, Colors.transparent],
+                        ),
+                      ),
+                      constraints: const BoxConstraints.expand(),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TodoIsCompletedIconWidget(todo: todo),
+                    ),
+                  ],
+                ),
+              );
+      },
     );
   }
 

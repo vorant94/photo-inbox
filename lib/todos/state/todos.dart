@@ -16,8 +16,6 @@ part 'todos.g.dart';
 
 @riverpod
 class Todos extends _$Todos {
-  final _imagesDir = 'todo-images';
-
   @override
   List<Todo> build() {
     final isar = GetIt.I<Isar>();
@@ -36,15 +34,13 @@ class Todos extends _$Todos {
   }) async {
     final isar = GetIt.I<Isar>();
 
-    final docDirPath = (await getApplicationDocumentsDirectory()).path;
-    final imagesDirPath = join(docDirPath, _imagesDir);
-    await Directory(imagesDirPath).ensure();
     final imageName = basename(xImage.path);
-    final imagePath = join(imagesDirPath, imageName);
-    await xImage.saveTo(imagePath);
+    final imageAbsolutePath =
+        await getTodoImageAbsolutePath(imageName: imageName);
+    await xImage.saveTo(imageAbsolutePath);
 
     final todo = await isar.writeTxn(() async {
-      final todo = Todo()..imagePath = imagePath;
+      final todo = Todo()..imageName = imageName;
 
       final id = await isar.todos.put(todo);
       return await isar.todos.get(id) as Todo;
@@ -121,3 +117,17 @@ final todoProvider = Provider.autoDispose.family<Todo, Id>((ref, todoId) {
   );
   return ref.state;
 });
+
+// TODO find a better place for this
+Future<String> getTodoImageAbsolutePath({
+  required String imageName,
+}) async {
+  final docDirPath = (await getApplicationDocumentsDirectory()).path;
+  final imagesDirPath = join(docDirPath, _imagesDir);
+  await Directory(imagesDirPath).ensure();
+  final imageAbsolutePath = join(imagesDirPath, imageName);
+
+  return imageAbsolutePath;
+}
+
+const _imagesDir = 'todo-images';
