@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'inbox_screen.dart';
 import 'state/todos.dart';
-import 'todos_screen.dart';
 
 class PreviewScreen extends ConsumerStatefulWidget
     implements PreviewScreenExtra {
@@ -81,7 +81,7 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
     await notifier.create(xImage: widget.xImage);
 
     if (mounted) {
-      context.goNamed(TodosScreen.routeName);
+      context.goNamed(InboxScreen.routeName);
     }
   }
 

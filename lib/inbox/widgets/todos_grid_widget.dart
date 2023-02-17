@@ -18,7 +18,7 @@ class TodosByDayGridWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.bodyText1),
+        Text(label, style: Theme.of(context).textTheme.bodyLarge),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

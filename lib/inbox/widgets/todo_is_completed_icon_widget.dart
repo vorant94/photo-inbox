@@ -7,10 +7,12 @@ import '../state/todos.dart';
 class TodoIsCompletedIconWidget extends ConsumerWidget {
   const TodoIsCompletedIconWidget({
     required this.todo,
+    this.onTodoCompletedCallback,
     super.key,
   });
 
   final Todo todo;
+  final VoidCallback? onTodoCompletedCallback;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,9 +29,14 @@ class TodoIsCompletedIconWidget extends ConsumerWidget {
     );
   }
 
-  void _toggleIsCompleted(WidgetRef ref) {
+  Future<void> _toggleIsCompleted(WidgetRef ref) async {
     final notifier = ref.read(todosProvider.notifier);
 
-    notifier.toggleIsCompleted(id: todo.id);
+    final isCompleted = await notifier.toggleIsCompleted(id: todo.id);
+    if (!isCompleted || onTodoCompletedCallback == null) {
+      return;
+    }
+
+    onTodoCompletedCallback!();
   }
 }

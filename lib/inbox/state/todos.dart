@@ -1,16 +1,13 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../shared/io/directory.dart';
+import '../../shared/core/date_time.dart';
+import '../../shared/state/show_all_mode.dart';
 import '../models/todo.dart';
-import 'show_all_mode.dart';
 
 part 'todos.g.dart';
 
@@ -36,7 +33,7 @@ class Todos extends _$Todos {
 
     final imageName = basename(xImage.path);
     final imageAbsolutePath =
-        await getTodoImageAbsolutePath(imageName: imageName);
+        Todos.getTodoImageAbsolutePath(imageName: imageName);
     await xImage.saveTo(imageAbsolutePath);
 
     final todo = await isar.writeTxn(() async {
@@ -49,7 +46,7 @@ class Todos extends _$Todos {
     state = [todo, ...state];
   }
 
-  Future<void> toggleIsCompleted({
+  Future<bool> toggleIsCompleted({
     required Id id,
   }) async {
     final isar = GetIt.I<Isar>();
@@ -65,6 +62,8 @@ class Todos extends _$Todos {
     });
 
     state = state.map((prev) => prev.id == id ? update : prev).toList();
+
+    return update.isCompleted;
   }
 
   Future<void> delete({
@@ -80,6 +79,46 @@ class Todos extends _$Todos {
     });
 
     state = state.where((todo) => todo.id != id).toList();
+  }
+
+  // "next" to-do is the next to-do to process. since the list is sorted
+  // by created date from newest to oldest, the next to-do is the one before.
+  Id? findNextTodoIdForToday({
+    required Id currentId,
+  }) {
+    final currentIndex = state.indexWhere((todo) => todo.id == currentId);
+    if (currentIndex == -1) return null;
+
+    final currentTodo = state[currentIndex];
+    final nextTodo = _findNextUncompletedTodo(currentIndex: currentIndex);
+    if (nextTodo == null) return null;
+
+    if (currentTodo.createdDate.isSameDate(nextTodo.createdDate)) {
+      return nextTodo.id;
+    }
+
+    return null;
+  }
+
+  Todo? _findNextUncompletedTodo({
+    required currentIndex,
+  }) {
+    if (currentIndex == 0) return null;
+
+    final nextTodo = state[currentIndex - 1];
+    if (!nextTodo.isCompleted) {
+      return nextTodo;
+    }
+
+    return _findNextUncompletedTodo(currentIndex: currentIndex - 1);
+  }
+
+  static late final String imagesDirPath;
+
+  static String getTodoImageAbsolutePath({
+    required String imageName,
+  }) {
+    return join(imagesDirPath, imageName);
   }
 }
 
@@ -117,17 +156,3 @@ final todoProvider = Provider.autoDispose.family<Todo, Id>((ref, todoId) {
   );
   return ref.state;
 });
-
-// TODO find a better place for this
-Future<String> getTodoImageAbsolutePath({
-  required String imageName,
-}) async {
-  final docDirPath = (await getApplicationDocumentsDirectory()).path;
-  final imagesDirPath = join(docDirPath, _imagesDir);
-  await Directory(imagesDirPath).ensure();
-  final imageAbsolutePath = join(imagesDirPath, imageName);
-
-  return imageAbsolutePath;
-}
-
-const _imagesDir = 'todo-images';

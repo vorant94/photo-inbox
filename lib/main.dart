@@ -1,16 +1,23 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'todos/camera_screen.dart';
-import 'todos/models/todo.dart';
-import 'todos/preview_screen.dart';
-import 'todos/todo_screen.dart';
-import 'todos/todos_screen.dart';
+import 'inbox/camera_screen.dart';
+import 'inbox/inbox_screen.dart';
+import 'inbox/models/todo.dart';
+import 'inbox/preview_screen.dart';
+import 'inbox/state/todos.dart';
+import 'inbox/todo_details_screen.dart';
+import 'preferences/preferences_screen.dart';
+import 'shared/io/directory.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +25,11 @@ Future<void> main() async {
 
   GetIt.I.registerSingleton(await Isar.open([TodoSchema]));
   GetIt.I.registerSingleton(await SharedPreferences.getInstance());
+
+  final docDirPath = (await getApplicationDocumentsDirectory()).path;
+  final imagesDirPath = join(docDirPath, _imagesDirName);
+  await Directory(imagesDirPath).ensure();
+  Todos.imagesDirPath = imagesDirPath;
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -37,6 +49,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+const _imagesDirName = 'todo-images';
 
 const int _primaryColor = 0xFFFF7601;
 const MaterialColor _primarySwatch = MaterialColor(_primaryColor, {
@@ -66,11 +80,12 @@ final _router = GoRouter(
       path: '/',
       // TODO how to use here named redirect?
       redirect: (BuildContext context, GoRouterState state) =>
-          TodosScreen.route.path,
+          InboxScreen.route.path,
     ),
-    TodosScreen.route,
-    TodoScreen.route,
+    InboxScreen.route,
+    TodoDetailsScreen.route,
     CameraScreen.route,
     PreviewScreen.route,
+    PreferencesScreen.route,
   ],
 );
