@@ -56,13 +56,82 @@ final filteredTodosProvider = AutoDisposeProvider<List<Todo>>(
       : _$filteredTodosHash,
 );
 typedef FilteredTodosRef = AutoDisposeProviderRef<List<Todo>>;
-String _$todosByDayHash() => r'a494cdb07de75b23dc51960bee5c8fd1cf3d8037';
+String _$todoDaysHash() => r'e78f925b920aeb89039240c87cad6feaea466ea0';
+
+/// See also [todoDays].
+final todoDaysProvider = AutoDisposeProvider<List<DateTime>>(
+  todoDays,
+  name: r'todoDaysProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$todoDaysHash,
+);
+typedef TodoDaysRef = AutoDisposeProviderRef<List<DateTime>>;
+String _$todosByDayHash() => r'ae7450e990a9feac90b8d903734a59f9eec959c4';
 
 /// See also [todosByDay].
-final todosByDayProvider = AutoDisposeProvider<Map<DateTime, List<Todo>>>(
-  todosByDay,
-  name: r'todosByDayProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$todosByDayHash,
-);
-typedef TodosByDayRef = AutoDisposeProviderRef<Map<DateTime, List<Todo>>>;
+class TodosByDayProvider extends AutoDisposeProvider<List<Todo>> {
+  TodosByDayProvider(
+    this.day,
+  ) : super(
+          (ref) => todosByDay(
+            ref,
+            day,
+          ),
+          from: todosByDayProvider,
+          name: r'todosByDayProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$todosByDayHash,
+        );
+
+  final DateTime day;
+
+  @override
+  bool operator ==(Object other) {
+    return other is TodosByDayProvider && other.day == day;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, day.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+typedef TodosByDayRef = AutoDisposeProviderRef<List<Todo>>;
+
+/// See also [todosByDay].
+final todosByDayProvider = TodosByDayFamily();
+
+class TodosByDayFamily extends Family<List<Todo>> {
+  TodosByDayFamily();
+
+  TodosByDayProvider call(
+    DateTime day,
+  ) {
+    return TodosByDayProvider(
+      day,
+    );
+  }
+
+  @override
+  AutoDisposeProvider<List<Todo>> getProviderOverride(
+    covariant TodosByDayProvider provider,
+  ) {
+    return call(
+      provider.day,
+    );
+  }
+
+  @override
+  List<ProviderOrFamily>? get allTransitiveDependencies => null;
+
+  @override
+  List<ProviderOrFamily>? get dependencies => null;
+
+  @override
+  String? get name => r'todosByDayProvider';
+}

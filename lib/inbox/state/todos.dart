@@ -131,26 +131,21 @@ List<Todo> filteredTodos(FilteredTodosRef ref) {
 }
 
 @riverpod
-Map<DateTime, List<Todo>> todosByDay(TodosByDayRef ref) {
+List<DateTime> todoDays(TodoDaysRef ref) {
   final todos = ref.watch(filteredTodosProvider);
 
   return groupBy(todos, (todo) {
     final date = todo.createdDate;
 
     return DateTime(date.year, date.month, date.day);
-  });
+  }).keys.toList();
 }
 
-final todoProvider = Provider.autoDispose.family<Todo, Id>((ref, todoId) {
-  ref.listen<List<Todo>>(
-    filteredTodosProvider,
-    (previous, next) {
-      final todo = next.firstWhereOrNull((t) => t.id == todoId);
-      if (todo != null) {
-        ref.state = todo;
-      }
-    },
-    fireImmediately: true,
-  );
-  return ref.state;
-});
+@riverpod
+List<Todo> todosByDay(TodosByDayRef ref, DateTime day) {
+  final todos = ref.watch(filteredTodosProvider);
+
+  return todos
+      .where((todo) => todo.createdDate.isSameDate(day))
+      .sortedBy((element) => element.createdDate);
+}

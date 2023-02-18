@@ -2,22 +2,20 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'inbox_screen.dart';
 import 'state/todos.dart';
 
-class PreviewScreen extends ConsumerStatefulWidget
+class PreviewScreen extends StatefulHookConsumerWidget
     implements PreviewScreenExtra {
   const PreviewScreen({
     super.key,
     required this.xImage,
-    required this.ratio,
   });
 
-  @override
-  final double ratio;
   @override
   final XFile xImage;
 
@@ -34,39 +32,39 @@ class PreviewScreen extends ConsumerStatefulWidget
         throw Exception('Expected XFile');
       }
 
-      return PreviewScreen(xImage: extra.xImage, ratio: extra.ratio);
+      return PreviewScreen(xImage: extra.xImage);
     },
   );
 }
 
 class _PreviewScreenState extends ConsumerState<PreviewScreen> {
-  var fullScreenMode = false;
-
   @override
   Widget build(BuildContext context) {
+    final fullScreenMode = useState(false);
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.black,
         body: GestureDetector(
-          onTap: toggleFullScreenMode,
+          onTap: () => fullScreenMode.value = !fullScreenMode.value,
           child: Center(
             child: AspectRatio(
-              aspectRatio: widget.ratio,
+              aspectRatio: 9 / 16,
               child: Image.file(
                 File(widget.xImage.path),
               ),
             ),
           ),
         ),
-        floatingActionButton: fullScreenMode
+        floatingActionButton: fullScreenMode.value
             ? null
             : FloatingActionButton(
                 onPressed: submit,
                 child: const Icon(Icons.save),
               ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-        bottomNavigationBar: fullScreenMode
+        bottomNavigationBar: fullScreenMode.value
             ? null
             : BottomAppBar(
                 child: Row(children: const []),
@@ -84,20 +82,12 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
       context.goNamed(InboxScreen.routeName);
     }
   }
-
-  void toggleFullScreenMode() {
-    setState(() {
-      fullScreenMode = !fullScreenMode;
-    });
-  }
 }
 
 class PreviewScreenExtra {
   const PreviewScreenExtra({
     required this.xImage,
-    required this.ratio,
   });
 
-  final double ratio;
   final XFile xImage;
 }

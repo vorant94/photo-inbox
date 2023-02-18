@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/todo.dart';
 import '../state/todos.dart';
@@ -12,10 +12,12 @@ import 'todo_is_completed_icon_widget.dart';
 class TodoGridTileWidget extends ConsumerWidget {
   const TodoGridTileWidget({
     required this.todo,
+    required this.index,
     super.key,
   });
 
   final Todo todo;
+  final int index;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,7 +54,10 @@ class TodoGridTileWidget extends ConsumerWidget {
   void _gotoTodo(BuildContext context) {
     context.pushNamed(
       TodoDetailsScreen.routeName,
-      params: {'todoId': todo.id.toString()},
+      extra: TodoDetailsScreenExtra(
+        index: index,
+        day: todo.createdDate,
+      ),
     );
   }
 }
