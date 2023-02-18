@@ -2,10 +2,10 @@ import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'show_all_mode.g.dart';
+part 'show_completed.g.dart';
 
 @riverpod
-class ShowAllMode extends _$ShowAllMode {
+class ShowCompleted extends _$ShowCompleted {
   final _prefsKey = 'showAllMode';
 
   @override

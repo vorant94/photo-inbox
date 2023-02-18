@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/core/date_time.dart';
-import '../../shared/state/show_all_mode.dart';
+import '../../shared/state/show_completed.dart';
 import '../models/todo.dart';
 
 part 'todos.g.dart';
@@ -81,8 +81,6 @@ class Todos extends _$Todos {
     state = state.where((todo) => todo.id != id).toList();
   }
 
-  // "next" to-do is the next to-do to process. since the list is sorted
-  // by created date from newest to oldest, the next to-do is the one before.
   Id? findNextTodoIdForToday({
     required Id currentId,
   }) {
@@ -125,9 +123,9 @@ class Todos extends _$Todos {
 @riverpod
 List<Todo> filteredTodos(FilteredTodosRef ref) {
   final allTodos = ref.watch(todosProvider);
-  final showAllMode = ref.watch(showAllModeProvider);
+  final showCompleted = ref.watch(showCompletedProvider);
 
-  return showAllMode
+  return showCompleted
       ? allTodos
       : allTodos.where((todo) => !todo.isCompleted).toList();
 }

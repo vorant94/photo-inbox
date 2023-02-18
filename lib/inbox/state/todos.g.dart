@@ -45,7 +45,7 @@ abstract class _$Todos extends AutoDisposeNotifier<List<Todo>> {
   List<Todo> build();
 }
 
-String _$filteredTodosHash() => r'2d1bb1509f88f17d5893f043b78bd6f915551c2b';
+String _$filteredTodosHash() => r'a567a3c42109cfe2f0563538a42f2b1cfed9b1e9';
 
 /// See also [filteredTodos].
 final filteredTodosProvider = AutoDisposeProvider<List<Todo>>(

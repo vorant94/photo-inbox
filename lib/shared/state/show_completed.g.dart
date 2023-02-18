@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'show_all_mode.dart';
+part of 'show_completed.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -29,18 +29,19 @@ class _SystemHash {
   }
 }
 
-String _$ShowAllModeHash() => r'2945691cfedca9aa039a7bf6af7641f1af5dd6b9';
+String _$ShowCompletedHash() => r'9515e847b0e58fd7a3ca65b7fea5610b0ac44696';
 
-/// See also [ShowAllMode].
-final showAllModeProvider = AutoDisposeNotifierProvider<ShowAllMode, bool>(
-  ShowAllMode.new,
-  name: r'showAllModeProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$ShowAllModeHash,
+/// See also [ShowCompleted].
+final showCompletedProvider = AutoDisposeNotifierProvider<ShowCompleted, bool>(
+  ShowCompleted.new,
+  name: r'showCompletedProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$ShowCompletedHash,
 );
-typedef ShowAllModeRef = AutoDisposeNotifierProviderRef<bool>;
+typedef ShowCompletedRef = AutoDisposeNotifierProviderRef<bool>;
 
-abstract class _$ShowAllMode extends AutoDisposeNotifier<bool> {
+abstract class _$ShowCompleted extends AutoDisposeNotifier<bool> {
   @override
   bool build();
 }

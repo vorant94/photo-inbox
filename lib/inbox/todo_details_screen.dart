@@ -73,19 +73,19 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
   void onTodoCompletedCallback() {
     final notifier = ref.read(todosProvider.notifier);
 
-    final nextTodoId = notifier.findNextTodoIdForToday(
-      currentId: widget.todoId,
-    );
+    final nextTodoId =
+        notifier.findNextTodoIdForToday(currentId: widget.todoId);
 
-    pushNextTodoOrPopSelf(nextTodoId: nextTodoId);
+    pushNextTodoOrPopSelf(
+      nextTodoId: nextTodoId,
+    );
   }
 
   Future<void> deleteTodo() async {
     final notifier = ref.read(todosProvider.notifier);
 
-    final nextTodoId = notifier.findNextTodoIdForToday(
-      currentId: widget.todoId,
-    );
+    final nextTodoId =
+        notifier.findNextTodoIdForToday(currentId: widget.todoId);
 
     await notifier.delete(id: widget.todoId);
     if (!mounted) {
@@ -95,7 +95,9 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
     pushNextTodoOrPopSelf(nextTodoId: nextTodoId);
   }
 
-  void pushNextTodoOrPopSelf({Id? nextTodoId}) {
+  void pushNextTodoOrPopSelf({
+    Id? nextTodoId,
+  }) {
     if (nextTodoId == null) {
       context.pop();
       return;

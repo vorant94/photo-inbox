@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../shared/common/drawer.dart';
-import '../shared/state/show_all_mode.dart';
+import '../shared/state/show_completed.dart';
 
 class PreferencesScreen extends ConsumerWidget {
   const PreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showAllMode = ref.watch(showAllModeProvider);
-    final showAllModeNotifier = ref.watch(showAllModeProvider.notifier);
+    final showCompleted = ref.watch(showCompletedProvider);
+    final showcompletedNotifier = ref.watch(showCompletedProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,10 +21,10 @@ class PreferencesScreen extends ConsumerWidget {
       body: Column(
         children: [
           ListTile(
-            title: const Text('Show all mode'),
+            title: const Text('Show completed Todos as well'),
             trailing: Switch(
-              value: showAllMode,
-              onChanged: (value) => showAllModeNotifier.toggle(),
+              value: showCompleted,
+              onChanged: (value) => showcompletedNotifier.toggle(),
             ),
           ),
         ],
