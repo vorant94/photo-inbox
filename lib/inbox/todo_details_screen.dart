@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../shared/state/show_completed.dart';
 import 'models/todo.dart';
@@ -66,6 +67,11 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
       appBar: fullScreenMode.value
           ? null
           : AppBar(
+              centerTitle: true,
+              title: Text(
+                DateFormat.MMMEd().format(widget.day),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
               actions: [
                 TodoIsCompletedIconWidget(
                   todo: todo,
