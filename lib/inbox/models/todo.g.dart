@@ -17,18 +17,23 @@ const TodoSchema = CollectionSchema(
   name: r'Todo',
   id: -505491818817781703,
   properties: {
-    r'createdDate': PropertySchema(
+    r'aspectRatio': PropertySchema(
       id: 0,
+      name: r'aspectRatio',
+      type: IsarType.double,
+    ),
+    r'createdDate': PropertySchema(
+      id: 1,
       name: r'createdDate',
       type: IsarType.dateTime,
     ),
     r'imageName': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'imageName',
       type: IsarType.string,
     ),
     r'isCompleted': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'isCompleted',
       type: IsarType.bool,
     )
@@ -63,9 +68,10 @@ void _todoSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdDate);
-  writer.writeString(offsets[1], object.imageName);
-  writer.writeBool(offsets[2], object.isCompleted);
+  writer.writeDouble(offsets[0], object.aspectRatio);
+  writer.writeDateTime(offsets[1], object.createdDate);
+  writer.writeString(offsets[2], object.imageName);
+  writer.writeBool(offsets[3], object.isCompleted);
 }
 
 Todo _todoDeserialize(
@@ -75,10 +81,11 @@ Todo _todoDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Todo();
-  object.createdDate = reader.readDateTime(offsets[0]);
+  object.aspectRatio = reader.readDouble(offsets[0]);
+  object.createdDate = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.imageName = reader.readString(offsets[1]);
-  object.isCompleted = reader.readBool(offsets[2]);
+  object.imageName = reader.readString(offsets[2]);
+  object.isCompleted = reader.readBool(offsets[3]);
   return object;
 }
 
@@ -90,10 +97,12 @@ P _todoDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -188,6 +197,68 @@ extension TodoQueryWhere on QueryBuilder<Todo, Todo, QWhereClause> {
 }
 
 extension TodoQueryFilter on QueryBuilder<Todo, Todo, QFilterCondition> {
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> aspectRatioEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'aspectRatio',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> aspectRatioGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'aspectRatio',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> aspectRatioLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'aspectRatio',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Todo, Todo, QAfterFilterCondition> aspectRatioBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'aspectRatio',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
   QueryBuilder<Todo, Todo, QAfterFilterCondition> createdDateEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -439,6 +510,18 @@ extension TodoQueryObject on QueryBuilder<Todo, Todo, QFilterCondition> {}
 extension TodoQueryLinks on QueryBuilder<Todo, Todo, QFilterCondition> {}
 
 extension TodoQuerySortBy on QueryBuilder<Todo, Todo, QSortBy> {
+  QueryBuilder<Todo, Todo, QAfterSortBy> sortByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Todo, Todo, QAfterSortBy> sortByAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.desc);
+    });
+  }
+
   QueryBuilder<Todo, Todo, QAfterSortBy> sortByCreatedDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdDate', Sort.asc);
@@ -477,6 +560,18 @@ extension TodoQuerySortBy on QueryBuilder<Todo, Todo, QSortBy> {
 }
 
 extension TodoQuerySortThenBy on QueryBuilder<Todo, Todo, QSortThenBy> {
+  QueryBuilder<Todo, Todo, QAfterSortBy> thenByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Todo, Todo, QAfterSortBy> thenByAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.desc);
+    });
+  }
+
   QueryBuilder<Todo, Todo, QAfterSortBy> thenByCreatedDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdDate', Sort.asc);
@@ -527,6 +622,12 @@ extension TodoQuerySortThenBy on QueryBuilder<Todo, Todo, QSortThenBy> {
 }
 
 extension TodoQueryWhereDistinct on QueryBuilder<Todo, Todo, QDistinct> {
+  QueryBuilder<Todo, Todo, QDistinct> distinctByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'aspectRatio');
+    });
+  }
+
   QueryBuilder<Todo, Todo, QDistinct> distinctByCreatedDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdDate');
@@ -551,6 +652,12 @@ extension TodoQueryProperty on QueryBuilder<Todo, Todo, QQueryProperty> {
   QueryBuilder<Todo, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Todo, double, QQueryOperations> aspectRatioProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'aspectRatio');
     });
   }
 

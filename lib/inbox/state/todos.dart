@@ -28,6 +28,7 @@ class Todos extends _$Todos {
 
   Future<void> create({
     required XFile xImage,
+    required double aspectRatio,
   }) async {
     final isar = GetIt.I<Isar>();
 
@@ -37,7 +38,9 @@ class Todos extends _$Todos {
     await xImage.saveTo(imageAbsolutePath);
 
     final todo = await isar.writeTxn(() async {
-      final todo = Todo()..imageName = imageName;
+      final todo = Todo()
+        ..imageName = imageName
+        ..aspectRatio = aspectRatio;
 
       final id = await isar.todos.put(todo);
       return await isar.todos.get(id) as Todo;

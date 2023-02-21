@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,18 +18,22 @@ import 'inbox/state/todos.dart';
 import 'inbox/todo_details_screen.dart';
 import 'preferences/preferences_screen.dart';
 import 'shared/io/directory.dart';
+import 'shared/isar/perform_migration.ts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   CameraScreen.cameras = await availableCameras();
 
-  GetIt.I.registerSingleton(await Isar.open([TodoSchema]));
+  final isar = await Isar.open([TodoSchema]);
+  GetIt.I.registerSingleton(isar);
   GetIt.I.registerSingleton(await SharedPreferences.getInstance());
 
   final docDirPath = (await getApplicationDocumentsDirectory()).path;
   final imagesDirPath = join(docDirPath, _imagesDirName);
   await Directory(imagesDirPath).ensure();
   Todos.imagesDirPath = imagesDirPath;
+
+  await isar.performMigration();
 
   runApp(const ProviderScope(child: MyApp()));
 }

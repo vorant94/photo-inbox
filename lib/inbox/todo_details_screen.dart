@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../shared/state/show_completed.dart';
+import 'common/todo_popup_menu_items.dart';
 import 'models/todo.dart';
 import 'state/todos.dart';
 import 'widgets/todo_is_completed_icon_widget.dart';
 
-class TodoDetailsScreen extends StatefulHookConsumerWidget
+class TodoDetailsScreen extends ConsumerStatefulWidget
     implements TodoDetailsScreenExtra {
   const TodoDetailsScreen({
     required this.index,
@@ -45,74 +45,26 @@ class TodoDetailsScreen extends StatefulHookConsumerWidget
 
 class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
   final carouselController = CarouselController();
+  var fullScreenMode = false;
+  late int currentTodoIndex;
 
   @override
-  Widget build(BuildContext context) {
-    final todos = ref.watch(todosByDayProvider(widget.day));
-    if (todos.isEmpty) {
-      return const Scaffold(
-        body: Center(
-          child: Text('No todos for this day.'),
-        ),
-      );
-    }
+  void initState() {
+    currentTodoIndex = widget.index;
 
-    final fullScreenMode = useState(false);
-    final currentTodoIndex = useState(widget.index);
-    final todo = todos[currentTodoIndex.value];
+    super.initState();
+  }
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: fullScreenMode.value ? Colors.black : null,
-      appBar: fullScreenMode.value
-          ? null
-          : AppBar(
-              centerTitle: true,
-              title: Text(
-                DateFormat.MMMEd().format(widget.day),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              actions: [
-                TodoIsCompletedIconWidget(
-                  todo: todo,
-                  onTodoCompletedCallback: onTodoCompletedCallback,
-                ),
-                PopupMenuButton(
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: _PopupMenuAction.delete,
-                      child: Text('Delete'),
-                    )
-                  ],
-                  onSelected: (action) =>
-                      onPopupMenuSelected(action: action, todo: todo),
-                )
-              ],
-            ),
-      body: GestureDetector(
-        onTap: () => fullScreenMode.value = !fullScreenMode.value,
-        child: Center(
-          child: CarouselSlider(
-            carouselController: carouselController,
-            options: CarouselOptions(
-              aspectRatio: 9 / 16,
-              initialPage: currentTodoIndex.value,
-              viewportFraction: 1.0,
-              enableInfiniteScroll: false,
-              onPageChanged: (index, reason) => currentTodoIndex.value = index,
-            ),
-            items: todos
-                .map((todo) => Image.file(
-                      File(Todos.getTodoImageAbsolutePath(
-                        imageName: todo.imageName,
-                      )),
-                    ))
-                .toList(),
-          ),
-        ),
-      ),
-    );
+  toggleFullScreen() {
+    setState(() {
+      fullScreenMode = !fullScreenMode;
+    });
+  }
+
+  onPageChanged({required int index}) {
+    setState(() {
+      currentTodoIndex = index;
+    });
   }
 
   void onTodoCompletedCallback() {
@@ -122,14 +74,16 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
     }
   }
 
-  void onPopupMenuSelected({
-    required _PopupMenuAction action,
+  void onTodoActionSelected({
+    required TodoAction action,
     required Todo todo,
   }) {
     switch (action) {
-      case _PopupMenuAction.delete:
+      case TodoAction.delete:
         deleteTodo(todo: todo);
         break;
+      default:
+        throw Exception('Unexpected action: $action');
     }
   }
 
@@ -144,11 +98,71 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
     if (isLastTodo) {
       context.pop();
     }
-  }
-}
 
-enum _PopupMenuAction {
-  delete,
+    showTodoActionSnackBar(context: context, action: TodoAction.delete);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final todos = ref.watch(todosByDayProvider(widget.day));
+    if (todos.isEmpty) {
+      return const Scaffold(
+        body: Center(
+          child: Text('No todos for this day.'),
+        ),
+      );
+    }
+
+    final todo = todos[currentTodoIndex];
+
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      backgroundColor: fullScreenMode ? Colors.black : null,
+      appBar: fullScreenMode
+          ? null
+          : AppBar(
+              centerTitle: true,
+              title: Text(
+                DateFormat.MMMEd().format(widget.day),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              actions: [
+                TodoIsCompletedIconWidget(
+                  todo: todo,
+                  onTodoCompletedCallback: onTodoCompletedCallback,
+                ),
+                PopupMenuButton(
+                  icon: const Icon(Icons.more_vert),
+                  itemBuilder: (context) => todoPopupMenuItems,
+                  onSelected: (action) =>
+                      onTodoActionSelected(action: action, todo: todo),
+                )
+              ],
+            ),
+      body: GestureDetector(
+        onTap: () => toggleFullScreen(),
+        child: Center(
+          child: CarouselSlider(
+            carouselController: carouselController,
+            options: CarouselOptions(
+              aspectRatio: todo.aspectRatio,
+              initialPage: currentTodoIndex,
+              viewportFraction: 1.0,
+              enableInfiniteScroll: false,
+              onPageChanged: (index, reason) => onPageChanged(index: index),
+            ),
+            items: todos
+                .map((todo) => Image.file(
+                      File(Todos.getTodoImageAbsolutePath(
+                        imageName: todo.imageName,
+                      )),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class TodoDetailsScreenExtra {

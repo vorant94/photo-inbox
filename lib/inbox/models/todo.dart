@@ -8,4 +8,5 @@ class Todo {
   DateTime createdDate = DateTime.now();
   bool isCompleted = false;
   late String imageName;
+  late double aspectRatio;
 }

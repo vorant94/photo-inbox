@@ -1,8 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../shared/camera/camera_value.dart';
 import 'preview_screen.dart';
@@ -55,6 +55,24 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     super.dispose();
   }
 
+  Future<void> takePicture() async {
+    await initializeControllerFuture;
+
+    final xImage = await controller.takePicture();
+
+    if (!mounted) {
+      return;
+    }
+
+    context.pushNamed(
+      PreviewScreen.routeName,
+      extra: PreviewScreenExtra(
+        xImage: xImage,
+        aspectRatio: controller.value.aspectRatioInverted,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,21 +106,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Future<void> takePicture() async {
-    await initializeControllerFuture;
-
-    final xImage = await controller.takePicture();
-
-    if (!mounted) {
-      return;
-    }
-
-    context.pushNamed(
-      PreviewScreen.routeName,
-      extra: PreviewScreenExtra(xImage: xImage),
     );
   }
 }

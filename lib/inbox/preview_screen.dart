@@ -2,22 +2,25 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'common/todo_popup_menu_items.dart';
 import 'inbox_screen.dart';
 import 'state/todos.dart';
 
-class PreviewScreen extends StatefulHookConsumerWidget
+class PreviewScreen extends ConsumerStatefulWidget
     implements PreviewScreenExtra {
   const PreviewScreen({
     super.key,
     required this.xImage,
+    required this.aspectRatio,
   });
 
   @override
   final XFile xImage;
+  @override
+  final double aspectRatio;
 
   @override
   ConsumerState<PreviewScreen> createState() => _PreviewScreenState();
@@ -32,39 +35,62 @@ class PreviewScreen extends StatefulHookConsumerWidget
         throw Exception('Expected XFile');
       }
 
-      return PreviewScreen(xImage: extra.xImage);
+      return PreviewScreen(
+        xImage: extra.xImage,
+        aspectRatio: extra.aspectRatio,
+      );
     },
   );
 }
 
 class _PreviewScreenState extends ConsumerState<PreviewScreen> {
+  var fullScreenMode = false;
+
+  void toggleFullScreen() {
+    setState(() {
+      fullScreenMode = !fullScreenMode;
+    });
+  }
+
+  Future<void> submit() async {
+    final notifier = ref.read(todosProvider.notifier);
+
+    await notifier.create(
+      xImage: widget.xImage,
+      aspectRatio: widget.aspectRatio,
+    );
+
+    if (mounted) {
+      showTodoActionSnackBar(context: context, action: TodoAction.create);
+      context.goNamed(InboxScreen.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final fullScreenMode = useState(false);
-
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.black,
         body: GestureDetector(
-          onTap: () => fullScreenMode.value = !fullScreenMode.value,
+          onTap: () => toggleFullScreen(),
           child: Center(
             child: AspectRatio(
-              aspectRatio: 9 / 16,
+              aspectRatio: widget.aspectRatio,
               child: Image.file(
                 File(widget.xImage.path),
               ),
             ),
           ),
         ),
-        floatingActionButton: fullScreenMode.value
+        floatingActionButton: fullScreenMode
             ? null
             : FloatingActionButton(
                 onPressed: submit,
                 child: const Icon(Icons.save),
               ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-        bottomNavigationBar: fullScreenMode.value
+        bottomNavigationBar: fullScreenMode
             ? null
             : BottomAppBar(
                 child: Row(children: const []),
@@ -72,22 +98,14 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
       ),
     );
   }
-
-  Future<void> submit() async {
-    final notifier = ref.read(todosProvider.notifier);
-
-    await notifier.create(xImage: widget.xImage);
-
-    if (mounted) {
-      context.goNamed(InboxScreen.routeName);
-    }
-  }
 }
 
 class PreviewScreenExtra {
   const PreviewScreenExtra({
     required this.xImage,
+    required this.aspectRatio,
   });
 
   final XFile xImage;
+  final double aspectRatio;
 }

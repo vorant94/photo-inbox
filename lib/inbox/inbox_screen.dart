@@ -8,6 +8,10 @@ import 'widgets/todos_by_day_widget.dart';
 class InboxScreen extends StatelessWidget {
   const InboxScreen({super.key});
 
+  Future<void> _createTodo(BuildContext context) async {
+    context.pushNamed(CameraScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,10 +25,6 @@ class InboxScreen extends StatelessWidget {
       ),
       body: const TodosByDayWidget(),
     );
-  }
-
-  Future<void> _createTodo(BuildContext context) async {
-    context.pushNamed(CameraScreen.routeName);
   }
 
   static const routeName = 'inbox';
