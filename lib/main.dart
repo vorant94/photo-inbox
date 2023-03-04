@@ -84,7 +84,7 @@ final _router = GoRouter(
       path: '/',
       // TODO how to use here named redirect?
       redirect: (BuildContext context, GoRouterState state) =>
-          InboxScreen.route.path,
+          CameraScreen.route.path,
     ),
     InboxScreen.route,
     TodoDetailsScreen.route,

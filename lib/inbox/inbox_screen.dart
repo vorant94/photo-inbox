@@ -9,7 +9,7 @@ class InboxScreen extends StatelessWidget {
   const InboxScreen({super.key});
 
   Future<void> _createTodo(BuildContext context) async {
-    context.pushNamed(CameraScreen.routeName);
+    context.goNamed(CameraScreen.routeName);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:photo_view/photo_view.dart';
 
 import 'common/todo_popup_menu_items.dart';
 import 'inbox_screen.dart';
@@ -66,6 +67,10 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
     }
   }
 
+  File get previewImage {
+    return File(widget.xImage.path);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -77,9 +82,12 @@ class _PreviewScreenState extends ConsumerState<PreviewScreen> {
           child: Center(
             child: AspectRatio(
               aspectRatio: widget.aspectRatio,
-              child: Image.file(
-                File(widget.xImage.path),
-              ),
+              child: fullScreenMode
+                  ? PhotoView(
+                      minScale: PhotoViewComputedScale.contained,
+                      imageProvider: FileImage(previewImage),
+                    )
+                  : Image.file(previewImage),
             ),
           ),
         ),
