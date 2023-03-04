@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../shared/state/show_completed.dart';
 import 'common/todo_popup_menu_items.dart';
@@ -55,13 +56,13 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
     super.initState();
   }
 
-  toggleFullScreen() {
+  void toggleFullScreen() {
     setState(() {
       fullScreenMode = !fullScreenMode;
     });
   }
 
-  onPageChanged({required int index}) {
+  void onPageChanged({required int index}) {
     setState(() {
       currentTodoIndex = index;
     });
@@ -72,6 +73,12 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
     if (showCompleted) {
       carouselController.nextPage();
     }
+  }
+
+  File todoImage({required Todo todo}) {
+    return File(Todos.getTodoImageAbsolutePath(
+      imageName: todo.imageName,
+    ));
   }
 
   void onTodoActionSelected({
@@ -150,23 +157,28 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
       body: GestureDetector(
         onTap: () => toggleFullScreen(),
         child: Center(
-          child: CarouselSlider(
-            carouselController: carouselController,
-            options: CarouselOptions(
-              aspectRatio: todo.aspectRatio,
-              initialPage: currentTodoIndex,
-              viewportFraction: 1.0,
-              enableInfiniteScroll: false,
-              onPageChanged: (index, reason) => onPageChanged(index: index),
-            ),
-            items: todos
-                .map((todo) => Image.file(
-                      File(Todos.getTodoImageAbsolutePath(
-                        imageName: todo.imageName,
-                      )),
-                    ))
-                .toList(),
-          ),
+          child: fullScreenMode
+              ? AspectRatio(
+                  aspectRatio: todo.aspectRatio,
+                  child: PhotoView(
+                    minScale: PhotoViewComputedScale.contained,
+                    imageProvider: FileImage(todoImage(todo: todo)),
+                  ),
+                )
+              : CarouselSlider(
+                  carouselController: carouselController,
+                  options: CarouselOptions(
+                    aspectRatio: todo.aspectRatio,
+                    initialPage: currentTodoIndex,
+                    viewportFraction: 1.0,
+                    enableInfiniteScroll: false,
+                    onPageChanged: (index, reason) =>
+                        onPageChanged(index: index),
+                  ),
+                  items: todos
+                      .map((todo) => Image.file(todoImage(todo: todo)))
+                      .toList(),
+                ),
         ),
       ),
     );
