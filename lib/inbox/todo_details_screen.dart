@@ -122,9 +122,17 @@ class _TodoDetailsScreenState extends ConsumerState<TodoDetailsScreen> {
           ? null
           : AppBar(
               centerTitle: true,
-              title: Text(
-                DateFormat.MMMEd().format(widget.day),
-                style: Theme.of(context).textTheme.bodyLarge,
+              title: Column(
+                children: [
+                  Text(
+                    DateFormat.MMMEd().format(todo.createdDate),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    DateFormat.Hm().format(todo.createdDate),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
               actions: [
                 TodoIsCompletedIconWidget(

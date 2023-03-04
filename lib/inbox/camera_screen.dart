@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/inbox/inbox_screen.dart';
 
 import '../shared/camera/camera_value.dart';
 import 'preview_screen.dart';
@@ -73,6 +74,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     );
   }
 
+  void gotoInbox() async {
+    context.goNamed(InboxScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,12 +96,34 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(10),
-                            color: Colors.black54,
-                            child: TextButton(
-                              onPressed: takePicture,
-                              child: const Text('Take photo'),
+                            color: Colors.black.withOpacity(0.5),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: TextButton(
+                                        onPressed: gotoInbox,
+                                        child: const Text('Inbox'),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: FloatingActionButton(
+                                        onPressed: takePicture,
+                                        child: const Icon(Icons.camera_alt),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
