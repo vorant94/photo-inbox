@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Photo Inbox',
       theme: ThemeData(
         colorScheme: const ColorScheme.light(primary: _primarySwatch),
