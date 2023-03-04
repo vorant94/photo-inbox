@@ -3,7 +3,7 @@ description: A photo-based to-do app tracker.
 
 publish_to: 'none'
 
-version: 1.0.1+1
+version: 1.0.1+5
 
 environment:
   sdk: '>=2.18.5 <3.0.0'
