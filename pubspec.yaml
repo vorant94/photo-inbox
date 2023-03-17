@@ -1,5 +1,5 @@
 name: mobile
-description: A photo-based to-do app tracker.
+description: Mobile first To-Do Tracker you waited for!
 
 publish_to: 'none'
 
@@ -48,7 +48,7 @@ flutter:
   uses-material-design: true
 
 flutter_icons:
-  image_path: "assets/icon/icon.jpg"
+  image_path: "assets/logo/icon.jpg"
   android: true
   ios: true
   min_sdk_android: 21
